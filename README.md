@@ -5,9 +5,6 @@ Figure 2 of the CMS inclusive-jet addendum, JHEP 12 (2022) 035. It also adds a
 POD PDF parameterisation to xFitter and tools for projecting external PDFs onto
 that parameterisation.
 
-The repository is being prepared for sharing. The setup below covers the
-public inputs; the private POD LHAPDF sets are intentionally not distributed.
-
 ## Repository layout
 
 | Path | Contents |
@@ -32,10 +29,6 @@ cd InclJets
 ./scripts/setup-public.sh
 source ./scripts/activate.sh
 ```
-
-The repository is private: the user needs GitHub read access and a configured
-GitHub SSH key. If HTTPS credentials are preferred, replace the clone URL with
-the corresponding authenticated HTTPS URL.
 
 The script initializes the pinned xFitter submodule at shallow depth; builds the bundled public
 QCDNUM 18-00/00 source into `install/qcdnum`; configures and installs xFitter
