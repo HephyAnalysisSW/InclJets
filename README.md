@@ -58,6 +58,47 @@ cd fits/SMP-22-014/figure2/smoke
 ./plot.sh
 ```
 
+## Running the Figure-2 fit
+
+The standard reconstructed HERA+CMS NNLO fit is intentionally separate from
+the smoke test and takes hours on a laptop. From the repository root, after
+public setup, run:
+
+```bash
+source ./scripts/activate.sh
+cd fits/SMP-22-014/figure2/central
+./run.sh
+```
+
+This writes the central fit under `central/output/` and validates the MINUIT
+and HESSE result. To produce its Hessian PDF members and plots after a
+successful central fit, use the documented continuation in
+[`errors/README.md`](fits/SMP-22-014/figure2/errors/README.md).
+
+## Likelihood comparison plot
+
+The direct-versus-POD comparison needs the installed
+`250503_pod_basis_40k` LHAPDF set in addition to the public setup. It fixes all
+PDF and nuisance parameters at each point: it does not minimize or profile.
+Run the short three-point smoke comparison and make its plot with:
+
+```bash
+source ./scripts/activate.sh
+cd fits/SMP-22-014/figure2/likelihood_scans
+python run_likelihood_scan.py \
+  --output smoke_Bg_3point \
+  --parameters Bg \
+  --coordinates=-0.5,0,0.5
+python plot_likelihood_scan.py \
+  --input smoke_Bg_3point/scan_results.npz \
+  --output-dir smoke_Bg_3point/plots
+```
+
+The resulting `likelihood_Bg.png` and `likelihood_comparison.pdf` compare the
+direct and full-POD HERA, CMS, and summed chi-square terms. The full 16
+parameter x 21 point scan is documented in the
+[`likelihood-scan README`](fits/SMP-22-014/figure2/likelihood_scans/README.md).
+
 ### POD inputs
 
 The current analysis basis is `250503_pod_basis_40k`: member 0 is the
