@@ -40,8 +40,10 @@ GIT_LFS_SKIP_SMUDGE=1 git -C "${data_dir}" checkout --detach "${data_revision}"
 git -C "${data_dir}" lfs install --local
 
 lfs_include="hera/h1zeusCombined/inclusiveDis/1506.06042/**,lhc/cms/jets/2111.10431/**"
+grid_probe="${data_dir}/lhc/cms/jets/2111.10431/FastNLO/1jet.NNLO.fnl5332h_y0_ptjet.tab"
 for attempt in 1 2 3 4 5; do
-  if git -C "${data_dir}" lfs pull --include="${lfs_include}"; then
+  git -C "${data_dir}" lfs pull --include="${lfs_include}" || true
+  if [[ -s "${grid_probe}" ]] && ! head -c 64 "${grid_probe}" | grep -q 'version https://git-lfs.github.com/spec'; then
     break
   fi
   if [[ "${attempt}" -eq 5 ]]; then
