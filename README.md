@@ -48,17 +48,29 @@ cd fits/SMP-22-014/figure2/smoke
 ./plot.sh
 ```
 
-### Private POD inputs
+### POD inputs
 
-The following LHAPDF sets are required for POD studies but are private and are
-not included here:
+The current analysis basis is `250503_pod_basis_40k`: member 0 is the
+full-flavour reference and members 1--100 are its POD directions at
+Q0 = 1.65 GeV. Its construction is implemented by the public
+[WMIN model](https://github.com/HEP-PBSP/wmin-model), and the public
+[NNPOD runcards](https://github.com/comane/NNPOD-wiki) use this exact set name.
+The repositories provide the construction code and runcards, rather than a
+prebuilt LHAPDF archive; install the released set in a local LHAPDF search path
+before running a POD card. The verified installed version used here has 101
+members and whole-directory SHA-256 fingerprint
+`b3eeae40a8c753090b22beeaf3adb393b36beb54c56367b159426db30c17cfd2`.
 
-- `250503_pod_basis_40k` — full-flavour reference plus 100 POD directions;
-- `gluon_POD_nongluon_PDF4LHC21` — gluon-only reference plus 30 directions.
+Verify an installation and the xFitter interface with:
 
-Install them through an authorized local LHAPDF path. The code checks the set
-name and expected member range at runtime. A checksummed distribution procedure
-will be documented here once redistribution/access is agreed.
+```bash
+cd fits/SMP-22-014/figure2/pod_5mode
+./validate_basis.sh
+```
+
+`gluon_POD_nongluon_PDF4LHC21` is a separate, private gluon-only comparison
+basis (member 0 plus 30 directions). It is intentionally not distributed or
+required for the central full-flavour likelihood studies.
 
 ## Current status
 
@@ -68,6 +80,10 @@ will be documented here once redistribution/access is agreed.
 - `pod_projection/` projects installed LHAPDF PDFs onto the native POD basis.
 - `fits/SMP-22-014/figure2/likelihood_scans/` evaluates fixed-nuisance direct
   and full-POD likelihoods without minimization or nuisance profiling.
+
+The full-POD fixed-nuisance reference was rerun after the portable setup
+cleanup and exactly reproduces the stored likelihood: total 1301.1646677513709
+(HERA 1229.7548014501342, CMS 71.40986630123827).
 
 Detailed commands and validation notes live in:
 
