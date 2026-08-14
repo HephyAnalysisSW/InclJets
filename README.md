@@ -37,9 +37,10 @@ The script initializes the pinned xFitter submodule; builds the bundled public
 QCDNUM 18-00/00 source into `install/qcdnum`; configures and installs xFitter
 into `install/xfitter`; and checks out `xfitter-datafiles` revision
 `4ed3a5d46872df39c82ed10f3aa9356f382f3c41`. The data checkout contains the
-public HERA/CMS cards, correlations, corrections, and theory grids. Do not add
-it to Git. Git LFS is required for the NNLO grids; set `JOBS=N` to change the
-default two build jobs.
+public HERA/CMS cards, correlations, corrections, and theory grids. It uses a
+sparse checkout of only the HERA I+II and CMS inclusive-jet subtrees required
+here. Do not add it to Git. Git LFS is required for the NNLO grids; set
+`JOBS=N` to change the default two build jobs.
 
 `environment.yml` is the supported public environment. An existing compatible
 environment (including the local `root` environment used during development)

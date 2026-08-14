@@ -31,6 +31,10 @@ if [[ ! -d "${data_dir}/.git" ]]; then
   git clone --no-checkout --filter=blob:none \
     https://gitlab.cern.ch/fitters/xfitter-datafiles.git "${data_dir}"
 fi
+git -C "${data_dir}" sparse-checkout init --cone
+git -C "${data_dir}" sparse-checkout set \
+  hera/h1zeusCombined/inclusiveDis/1506.06042 \
+  lhc/cms/jets/2111.10431
 git -C "${data_dir}" fetch --depth=1 origin "${data_revision}"
 git -C "${data_dir}" checkout --detach "${data_revision}"
 git -C "${data_dir}" lfs pull
