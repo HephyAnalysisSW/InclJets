@@ -20,14 +20,15 @@ public inputs; the private POD LHAPDF sets are intentionally not distributed.
 
 ## Setup
 
-Clone the repository recursively, activate a Conda environment that provides
-ROOT, LHAPDF, GSL, yaml-cpp, CMake, and a GNU Fortran compiler, then run the
-public setup script:
+Create the supplied Conda environment, then clone the repository recursively
+and run the public setup script:
 
 ```bash
-git clone --recurse-submodules git@github.com:HephyAnalysisSW/InclJets.git
+conda env create -f environment.yml
+conda activate incljets
+
+git clone --recurse-submodules https://github.com/HephyAnalysisSW/InclJets.git
 cd InclJets
-conda activate root
 ./scripts/setup-public.sh
 source ./scripts/activate.sh
 ```
@@ -39,6 +40,10 @@ into `install/xfitter`; and checks out `xfitter-datafiles` revision
 public HERA/CMS cards, correlations, corrections, and theory grids. Do not add
 it to Git. Git LFS is required for the NNLO grids; set `JOBS=N` to change the
 default two build jobs.
+
+`environment.yml` is the supported public environment. An existing compatible
+environment (including the local `root` environment used during development)
+also works, but it must provide the packages listed there.
 
 The first lightweight validation after public setup is the Figure-2 smoke fit:
 

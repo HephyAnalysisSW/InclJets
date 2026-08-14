@@ -1,0 +1,22 @@
+name: incljets
+
+channels:
+  - conda-forge
+
+dependencies:
+  - python >=3.11,<3.14
+  - root
+  - lhapdf
+  - cmake
+  - make
+  - git
+  - git-lfs
+  - pkg-config
+  - compilers
+  - gfortran
+  - gsl
+  - yaml-cpp
+  - openblas
+  - numpy
+  - matplotlib
+  - pyyaml

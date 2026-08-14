@@ -28,11 +28,22 @@ git -C "${project_root}" submodule update --init --recursive
 data_revision="4ed3a5d46872df39c82ed10f3aa9356f382f3c41"
 data_dir="${project_root}/xfitter-datafiles"
 if [[ ! -d "${data_dir}/.git" ]]; then
-  git clone --filter=blob:none https://gitlab.cern.ch/fitters/xfitter-datafiles.git "${data_dir}"
+  git clone --no-checkout --filter=blob:none \
+    https://gitlab.cern.ch/fitters/xfitter-datafiles.git "${data_dir}"
 fi
 git -C "${data_dir}" fetch --depth=1 origin "${data_revision}"
 git -C "${data_dir}" checkout --detach "${data_revision}"
 git -C "${data_dir}" lfs pull
+
+for input in \
+  "hera/h1zeusCombined/inclusiveDis/1506.06042/HERA1+2_NCep_920-thexp.dat" \
+  "lhc/cms/jets/2111.10431/Run2016_NNLO_y0.dat" \
+  "lhc/cms/jets/2111.10431/FastNLO/1jet.NNLO.fnl5332h_y0_ptjet.tab"; do
+  if [[ ! -s "${data_dir}/${input}" ]]; then
+    echo "Public data checkout is incomplete; missing ${input}" >&2
+    exit 1
+  fi
+done
 
 qcdnum_prefix="${project_root}/install/qcdnum"
 if [[ ! -x "${qcdnum_prefix}/bin/qcdnum-config" ]]; then
