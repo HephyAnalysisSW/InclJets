@@ -36,15 +36,29 @@ git -C "${data_dir}" sparse-checkout set \
   hera/h1zeusCombined/inclusiveDis/1506.06042 \
   lhc/cms/jets/2111.10431
 git -C "${data_dir}" fetch --depth=1 origin "${data_revision}"
-git -C "${data_dir}" checkout --detach "${data_revision}"
-git -C "${data_dir}" lfs pull
+GIT_LFS_SKIP_SMUDGE=1 git -C "${data_dir}" checkout --detach "${data_revision}"
+git -C "${data_dir}" lfs install --local
+
+lfs_include="hera/h1zeusCombined/inclusiveDis/1506.06042/**,lhc/cms/jets/2111.10431/**"
+for attempt in 1 2 3 4 5; do
+  if git -C "${data_dir}" lfs pull --include="${lfs_include}"; then
+    break
+  fi
+  if [[ "${attempt}" -eq 5 ]]; then
+    echo "Git LFS failed after ${attempt} attempts; rerun this script to resume." >&2
+    exit 1
+  fi
+  echo "Git LFS attempt ${attempt} failed; retrying in $((attempt * 10)) seconds..." >&2
+  sleep "$((attempt * 10))"
+done
 
 for input in \
   "hera/h1zeusCombined/inclusiveDis/1506.06042/HERA1+2_NCep_920-thexp.dat" \
   "lhc/cms/jets/2111.10431/Run2016_NNLO_y0.dat" \
   "lhc/cms/jets/2111.10431/FastNLO/1jet.NNLO.fnl5332h_y0_ptjet.tab"; do
-  if [[ ! -s "${data_dir}/${input}" ]]; then
-    echo "Public data checkout is incomplete; missing ${input}" >&2
+  input_path="${data_dir}/${input}"
+  if [[ ! -s "${input_path}" ]] || head -c 64 "${input_path}" | grep -q 'version https://git-lfs.github.com/spec'; then
+    echo "Public data checkout is incomplete or contains an LFS pointer: ${input}" >&2
     exit 1
   fi
 done
