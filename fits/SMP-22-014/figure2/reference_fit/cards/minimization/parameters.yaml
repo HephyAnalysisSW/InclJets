@@ -1,0 +1,108 @@
+# Reconstructed central parameter card for Figure 2 of JHEP 12 (2022) 035.
+# Numerical parameter values below are minimisation seeds, not published results.
+
+Minimizer: MINUIT
+MINUIT:
+  # doErrors below runs the post-fit HESSE pass internally.  Do not add an
+  # explicit `hesse` here: doing both caused a redundant, unstable second pass.
+  Commands: |
+    set str 2
+    migrad 200000
+    call fcn 3
+  doErrors: Hesse
+
+Parameters:
+  # xg = Ag x^Bg (1-x)^Cg (1 + Dg x + Eg x^2)
+  Ag: DEPENDENT
+  Bg:  [ -0.061953, 0.05 ]
+  Cg:  [  5.562367, 0.20 ]
+  Dg:  [  0.000000, 0.20 ]
+  Eg:  [  0.000000, 0.50 ]
+
+  # xuv = Auv x^Buv (1-x)^Cuv (1 + Euv x^2)
+  Auv: DEPENDENT
+  Buv: [  0.810476, 0.03 ]
+  Cuv: [  4.823512, 0.10 ]
+  Euv: [  9.921366, 0.50 ]
+
+  # xdv = Adv x^Bdv (1-x)^Cdv
+  Adv: DEPENDENT
+  Bdv: [  1.029995, 0.05 ]
+  Cdv: [  4.846279, 0.20 ]
+
+  # xUbar = AUbar x^BDbar (1-x)^CUbar (1 + DUbar x)
+  CUbar: [  7.059694, 0.30 ]
+  DUbar: [  1.548098, 0.50 ]
+
+  # xDbar = ADbar x^BDbar (1-x)^CDbar (1 + EDbar x^2)
+  ADbar: [  0.268830, 0.01 ]
+  BDbar: [ -0.127300, 0.01 ]
+  CDbar: [  9.586246, 0.50 ]
+  EDbar: [  0.000000, 0.50 ]
+
+  # alpha_s(mZ) is the sixteenth free fit parameter.
+  alphas: [ 0.1166, 0.0010 ]
+
+  fs:   [ 0.4, 0.0 ]
+  ZERO: [ 0.0, 0.0 ]
+  fd: "=1-fs"
+  AUbar: "=(1-fs)*ADbar"
+
+Parameterisations:
+  par_uv:
+    class: HERAPDF
+    parameters: [Auv, Buv, Cuv, ZERO, Euv]
+  par_dv:
+    class: HERAPDF
+    parameters: [Adv, Bdv, Cdv]
+  par_Ubar:
+    class: HERAPDF
+    parameters: [AUbar, BDbar, CUbar, DUbar]
+  par_Dbar:
+    class: HERAPDF
+    parameters: [ADbar, BDbar, CDbar, ZERO, EDbar]
+  par_dbar:
+    class: Factor
+    input: par_Dbar
+    factor: fd
+  par_s:
+    class: Factor
+    input: par_Dbar
+    factor: fs
+  par_g:
+    class: HERAPDF
+    parameters: [Ag, Bg, Cg, Dg, Eg]
+
+DefaultDecomposition: proton
+Decompositions:
+  proton:
+    class: UvDvUbarDbarS
+    xuv: par_uv
+    xdv: par_dv
+    xubar: par_Ubar
+    xdbar: par_dbar
+    xs: par_s
+    xg: par_g
+
+DefaultEvolution: proton-QCDNUM
+Evolutions:
+  proton-QCDNUM:
+    ? !include evolutions/QCDNUM.yaml
+    decomposition: proton
+
+Order: NNLO
+NFlavour: 5
+isFFNS: 0
+Q0: 1.378404875209  # sqrt(1.9 GeV^2)
+
+? !include constants.yaml
+
+byReaction:
+  RT_DISNC:
+    ? !include reactions/RT_DISNC.yaml
+
+hf_scheme_DISNC:
+  defaultValue: RT_DISNC
+
+hf_scheme_DISCC:
+  defaultValue: BaseDISCC

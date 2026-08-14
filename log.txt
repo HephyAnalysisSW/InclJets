@@ -1,0 +1,140 @@
+2026-08-05 Cloned xFitter master at 040072f38ba5fee9de750114e81827404aa64cf7.
+2026-08-05 Added a sparse xfitter-datafiles checkout with NNLO grids left as Git-LFS pointers.
+2026-08-05 Reconstructed the public central HERA+CMS Figure 2 fit cards under fits/SMP-22-014/figure2/central.
+2026-08-05 Confirmed the local ARM64 ROOT environment already has ROOT, GSL, yaml-cpp, BLAS/LAPACK, and GNU Fortran.
+2026-08-05 Created xFitter branch smp-22-014-macos and cherry-picked upstream macOS fixes as 4dd67302 and caaaad4b.
+2026-08-05 Installed CMake 3.31.8, Git LFS 3.7.1, and pkg-config 0.29.2 in /Users/robertschoefbeck/miniforge3.
+2026-08-05 Fetched and SHA-256 verified the four NNLO fastNLO grids (1,513,840,320 bytes); used direct LFS objects after a GitLab partial-clone scan returned HTTP 429.
+2026-08-05 Built bundled QCDNUM 18-00/00 with Miniforge Clang/GFortran and installed it under install/qcdnum.
+2026-08-05 Built and installed native ARM64 xFitter 2.2.1 under install/xfitter with QCDNUM, ROOT, GSL, yaml-cpp, and OpenBLAS.
+2026-08-05 Set xFitter build capacities to 3000 points, 1000 systematics, 50 datasets, and 20 chi2-scan points to fit Apple Silicon's linker range.
+2026-08-05 Added and validated a 91-point, two-parameter Figure 2 smoke fit; 68 FCN calls completed in 82 seconds.
+2026-08-05 Validated smoke/plot.sh with xfitter-draw; it writes a combined PDF and individual data/PDF PNG plots under smoke/plots.
+2026-08-05 Central MIGRAD/HESSE reached chi2/Ndof 1302.42/1118 and alpha_s(mZ)=0.11664; final Hessian error-member stage remains in progress.
+2026-08-05 Central ended after 3038 FCN calls; its first HESSE is accurate, but the redundant doErrors HESSE became non-positive-definite and wrote no PDF error members.
+
+Quick start (central fit):
+  cd /Users/robertschoefbeck/InclJets/fits/SMP-22-014/figure2/central
+  ./run.sh
+
+Quick start (Hessian members from the completed central minimum):
+  cd /Users/robertschoefbeck/InclJets/fits/SMP-22-014/figure2/errors
+  ./run.sh
+  ./plot.sh
+
+Quick start (smoke fit and debug plots):
+  cd /Users/robertschoefbeck/InclJets/fits/SMP-22-014/figure2/smoke
+  ./run.sh
+  ./plot.sh
+
+Modify the fit:
+  steering.txt: datasets, correlation files, chi2 prescription, kinematic cuts, and output Q2/x grid.
+  parameters.yaml: free/fixed PDF parameters, PDF functional forms, alpha_s, QCD order/evolution, and MINUIT commands.
+  constants.yaml: masses, electroweak constants, and CKM inputs.
+  datafiles -> ../../../../xfitter-datafiles: public data cards, correlations, NP/EW corrections, and NNLO grids.
+  README.md: reconstruction caveats, validation targets, and a longer modification guide.
+  Make a sibling run directory before a variation so each output/ directory and card set remain reproducible.
+
+Fit anatomy (paper notes; details in the central README.md):
+  HERA input: seven combined H1+ZEUS NC/CC inclusive-DIS cards from arXiv:1506.06042; Q2 > 7.5 GeV2 leaves 1056 points.
+  CMS input: 2016 anti-kT R=0.7 inclusive jets from arXiv:2111.10431 in four |y| bins; 78 active points plus ten statistical-correlation blocks.
+  Jet theory: fastNLO 2.5.0 convolves four 1jet.NNLO.fnl5332h_y{0,1,2,3}_ptjet.tab grids at muR=muF=pT.
+  Jet corrections: each rapidity prediction is F*NP*EW using NP/NP_y*.dat and EW/EW_y*.dat binwise K factors.
+  DIS theory: QCDNUM evolves the PDFs/alpha_s at NNLO; RT_DISNC handles NC reduced cross sections and BaseDISCC handles CC.
+  Fit engine: xFitter builds 1134 predictions and the nuisance/covariance chi2; MINUIT strategy 2 varies 15 PDF-shape parameters plus alpha_s and then runs HESSE.
+  Numerics/output: OpenBLAS/LAPACK handle matrix algebra; ROOT and xfitter-draw are available for inspecting and plotting the resulting PDF/error files.
+  Reproducibility caveat: this build uses QCDNUM 18-00/00 whereas the publication reports 17-01/14, so numerical agreement must be validated.
+
+2026-08-05 Corrected future central cards to omit explicit HESSE; doErrors:Hesse already performs the post-fit HESSE and member generation.
+2026-08-05 Error-only continuation validated in 684 s: chi2/Ndof=1302.418/1118, alpha_s=0.116638+/-0.001549, accurate 16-parameter covariance, 16 symmetric members.
+2026-08-05 Added errors/plot.sh for reproducible post-fit PDF plots with Hessian bands at all five stored Q2 values.
+2026-08-05 Generated and checked 130 post-fit PDF-band PNGs plus the 39 MB multipage errors/plots/plots.pdf.
+2026-08-05 Installed native ARM64 LHAPDF 6.5.5 in /Users/robertschoefbeck/miniforge3; Python bindings work and the set path is share/LHAPDF.
+2026-08-05 Installed and validated LHAPDF set 250503_pod_basis_40k (101 members); quarantined the incomplete 30/31-member PDF4LHC21 POD copy pending a dereferenced archive.
+2026-08-05 Completed and validated gluon_POD_nongluon_PDF4LHC21 (31 members, including recovered replica 30); all members of both private sets load and evaluate with LHAPDF 6.5.5.
+2026-08-05 Installed the official CT18NNLO LHAPDF set (59 members, 29 Hessian pairs at 90% CL; 67 MB).
+2026-08-05 Added a standalone GOLLUM-derived POD projection toolkit under pod_projection with local imports, exact demo grid/metric, NPZ output, and Matplotlib plots.
+2026-08-05 Validated the 100-mode CT18NNLO projection: 1540x100 rank-100 system, central residual/shift=5.4828e-4, median member ratio=6.310e-4, eight-second end-to-end runtime.
+2026-08-05 Audited POD conditioning: cond(X)=2.20e7 and cond(X^T X)=4.86e14; normal-equation and SVD reconstructions agree to 9.4e-12 relatively for CT18 central.
+2026-08-05 The existing xFitter binary was configured before LHAPDF was installed; reconfigure/rebuild it before implementing the future in-xFitter POD interface.
+
+Quick start (CT18NNLO -> 100-mode POD projection and plots):
+  cd /Users/robertschoefbeck/InclJets/pod_projection
+  ./run_ct18_demo.sh
+
+Modify/project another installed LHAPDF set:
+  python project_pdf.py --target-set SET_NAME --output outputs/SET_NAME_pod_projection.npz
+  python project_pdf.py --help
+2026-08-05 Added the upstream ratio_bands observable (both 90% bands divided by CT18 central) and corrected qcd5 panels to the demo order g,u,ubar,d,dbar,s,sbar,c,cbar,b,bbar; projection values are unchanged.
+2026-08-05 Added and installed an xFitter POD decomposition with configurable LHAPDF set, reference, integer mode list (default all), active flavors, coefficient names, and Q0.
+2026-08-05 Prepared but did not run a five-mode 250503_pod_basis_40k HERA+CMS card and a seven-mode gluon_POD_nongluon_PDF4LHC21 CMS-only card.
+2026-08-05 Kept xFitter/MINUIT parameter capacities unchanged; the prepared test fits expose five and seven POD coefficients, respectively.
+2026-08-05 Validated reference, one-hot, mixed-vector, configured-flavor, plugin-loading, and QCDNUM evolution closure without reading data or evaluating a likelihood.
+2026-08-05 Enforced active_flavors:[21] for the gluon POD; stored non-gluon member residues are at most 7.2e-7 in x*f on the projection grid.
+
+Quick validation (POD cards; no data, likelihood, or fit):
+  cd /Users/robertschoefbeck/InclJets/fits/SMP-22-014/figure2/pod_5mode && ./validate_basis.sh
+  cd /Users/robertschoefbeck/InclJets/fits/SMP-22-014/figure2/pod_gluon_cms_7mode && ./validate_basis.sh
+
+Future explicit fit starts (guarded; not run yet):
+  cd /Users/robertschoefbeck/InclJets/fits/SMP-22-014/figure2/pod_5mode && ./run.sh --run-fit
+  cd /Users/robertschoefbeck/InclJets/fits/SMP-22-014/figure2/pod_gluon_cms_7mode && ./run.sh --run-fit
+
+Modify the POD interface:
+  pod.yaml: set/reference_member/basis_members/active_flavors/q0 and immutable conventions; omit basis_members or use all for every non-reference mode.
+  parameters.yaml: coefficient seeds/steps, fixed or fitted alpha_s, evolution settings, and future MINUIT commands.
+  steering.txt: likelihood inputs; pod_5mode uses HERA+CMS and pod_gluon_cms_7mode uses only the four CMS jet datasets.
+  xfitter/pdfdecomps/POD/README.md: interface contract, validation tools, and physics conventions still requiring confirmation.
+2026-08-05 Froze the completed global minimum as immutable reference fit smp22014_global_hera_cms_20260805 under fits/SMP-22-014/figure2/reference_fit.
+2026-08-05 Stored 16 independent best-fit parameters, the rounded full covariance/correlation matrix, chi2=1302.418 for 1118 dof, and all 198 nuisance pulls with source hashes.
+2026-08-05 Added a no-overwrite reference-snapshot generator and prepared the no-minimization direct-versus-full-POD scan configuration/schema; no likelihood was evaluated.
+2026-08-05 Recorded that xFitter retained nuisance shifts/errors to four decimals only; require direct-reference chi2 closure before fixed-nuisance scans.
+2026-08-05 Set the pre-scan closure gate to abs(chi2_eval-1302.418)<=0.01 with scan abort on failure.
+2026-08-05 Added xFitter fixed-nuisance evaluation mode, strict pull-vector validation, and full-precision likelihood.txt output.
+2026-08-05 Added evaluate_direct.py for zero-free-parameter joint likelihood evaluation, exact HERA/CMS decomposition, and immutable per-point records.
+2026-08-05 Fixed-reference likelihood passed: chi2=1302.417647310198, delta=-0.000352690 versus 1302.418, with zero free parameters and fixed nuisances.
+2026-08-05 Joint-card decomposition gives HERA chi2=1229.809089721 and CMS chi2=72.608557590; their sum closes to 4.5e-13.
+
+Quick validation (immutable reference fit):
+  cd /Users/robertschoefbeck/InclJets/fits/SMP-22-014/figure2/reference_fit
+  shasum -a 256 -c files.sha256
+
+Create a separate future reference snapshot (the generator never overwrites):
+  python /Users/robertschoefbeck/InclJets/fits/SMP-22-014/figure2/tools/create_reference_fit.py --output NEW_DIRECTORY
+
+Likelihood-scan contract (paired reference and three-point smoke scan validated):
+  fits/SMP-22-014/figure2/likelihood_scans/scan_config.yaml
+  fits/SMP-22-014/figure2/likelihood_scans/result_schema.yaml
+
+Fixed-likelihood reference record and reproducible rerun:
+  fits/SMP-22-014/figure2/likelihood_scans/evaluations/reference_direct_combined/evaluation.yaml
+  cd /Users/robertschoefbeck/InclJets/fits/SMP-22-014/figure2/likelihood_scans
+  python evaluate_direct.py --output evaluations/reference_direct_combined_rerun
+2026-08-05 Extended xFitter LHAPDF6 output with explicit x/Q nodes and 17-digit values so the ill-conditioned 100-mode POD projection uses the exact grid without text-precision noise.
+2026-08-05 Added resumable direct-versus-full-POD fixed-nuisance likelihood scans and plotting for separate HERA, CMS, and summed terms; no minimization or profiling occurs.
+2026-08-05 Paired reference gives chi2 direct=1302.417647310 and full-POD=1301.164667751; the measured POD-minus-direct shift is -1.252979559.
+2026-08-05 Validated a three-point Bg scan at [-0.5,0,+0.5] HESSE sigma and generated its PNG/PDF likelihood-comparison plots; the 16x21 production scan was not started.
+
+Quick start (validated likelihood comparison smoke scan):
+  cd /Users/robertschoefbeck/InclJets/fits/SMP-22-014/figure2/likelihood_scans
+  python run_likelihood_scan.py --output smoke_Bg_3point --parameters Bg --coordinates=-0.5,0,0.5
+  python plot_likelihood_scan.py --input smoke_Bg_3point/scan_results.npz --output-dir smoke_Bg_3point/plots
+
+Full likelihood comparison (about 2.8 h serial; current dist0 run is diagnostic):
+  python run_likelihood_scan.py --output production_16x21
+  python plot_likelihood_scan.py --input production_16x21/scan_results.npz --output-dir production_16x21/plots
+2026-08-05 Started the resumable 16-parameter x 21-point direct-versus-POD diagnostic scan under likelihood_scans/production_16x21.
+2026-08-05 Added a reproducible central fitted-PDF high-x gluon closure test through x=1; no uncertainty members are projected.
+2026-08-05 Found the current dist0 projection fails the high-x gluon and turns negative near x=0.8; merely extending dist0 through x=1 is insufficient.
+2026-08-05 Verified the same 100-mode basis can close the gluon at the percent level through x=0.99 with an added relative high-x gluon term; the projection metric, not basis span, is the issue.
+2026-08-05 Replaced scan projection with steerable relative_gluon metric (lambda=0.1, x=0.05..0.99, floor=1e-12), including full x grid through 1.0; old production scan stopped and retained as diagnostic.
+2026-08-05 Started production_16x21_relative_gluon with the new projection; command is in likelihood_scans/README.md.
+2026-08-05 A second invocation collided with the persistent scan at an in-progress point; runner now removes only incomplete point directories before retrying, while completed evaluations remain protected.
+2026-08-05 Started a 21-point Bg-only relative_gluon pilot before the full 16-direction scan; central evaluation is shared by design.
+2026-08-05 ADbar evolution diagnostic: direct/POD use identical alpha_s=0.116638 and PDF residuals decrease with Q; remaining HERA-dominated bias is light-valence closure. A trial relative u_v,d_v metric on 1e-4<x<0.1 (lambda=0.1) reduces central input-grid RMS u_v/d_v residuals from 0.73%/1.14% to 0.095%/0.093% without materially degrading gluon closure.
+2026-08-05 Three-point ADbar gluon+valence likelihood test completed and plotted under likelihood_scans/adbar_gluon_valence_3point. Despite improved valence PDFs, chi2 shifts are unchanged; the remaining HERA source is therefore the light-sea/charge-weighted DIS combination, not alpha_s, evolution amplification, or valence closure alone.
+2026-08-05 Added configurable relative photon-exchange F2 proxy term (charge-weighted q+qbar, 1e-4<x<0.1, lambda=3) and tested ADbar at [-2,0,+2]. It reduces HERA POD-direct shifts from [+16.88,-2.33,-18.53] to [+13.39,-0.73,-13.22] and CMS shifts from [-2.53,-0.84,+0.81] to [-1.89,-0.67,+0.61]. Plot: likelihood_scans/adbar_gluon_valence_f2_3point/plots/likelihood_ADbar.png.
+
+Quick high-x gluon closure test:
+  cd /Users/robertschoefbeck/InclJets/fits/SMP-22-014/figure2/likelihood_scans
+  python high_x_gluon_closure.py

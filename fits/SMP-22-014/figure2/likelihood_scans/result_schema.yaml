@@ -1,0 +1,47 @@
+schema_version: 1
+format: numpy_npz
+planned_file: scan_results.npz
+
+row_arrays:
+  parameter_name: string
+  parameter_index: int
+  scan_coordinate_sigma: float
+  parameter_value: float
+  evaluation_status: string
+  direct_chi2_HERA: float
+  direct_chi2_CMS: float
+  direct_chi2_sum: float
+  full_pod_chi2_HERA: float
+  full_pod_chi2_CMS: float
+  full_pod_chi2_sum: float
+  delta_chi2_HERA: float
+  delta_chi2_CMS: float
+  delta_chi2_sum: float
+  projection_relative_residual: float
+
+matrix_arrays:
+  external_parameter_values:
+    columns: 16
+    order_from: ../reference_fit/covariance.npz::parameter_names
+  full_pod_coefficients:
+    columns: 100
+    member_order: [1, 100]
+
+path_arrays:
+  direct_evaluation_directory: string
+  pod_evaluation_directory: string
+
+metadata:
+  reference_fit_id: string
+  scan_config_sha256: string
+  projection_q_ext_GeV: float
+  projection_contract: json
+  reference_closure_expected_chi2: float
+  reference_closure_evaluated_chi2: float
+  reference_closure_delta_chi2: float
+  reference_closure_max_absolute_delta_chi2: float
+  reference_closure_passed: bool
+  nuisance_stored_precision: string
+  minimization: false
+  profiling: false
+  nuisance_treatment: fixed

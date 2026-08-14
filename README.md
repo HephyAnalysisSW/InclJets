@@ -12,7 +12,7 @@ public inputs; the private POD LHAPDF sets are intentionally not distributed.
 
 | Path | Contents |
 |---|---|
-| `xfitter/` | xFitter source with the POD decomposition and small supporting changes. This will be maintained as a pinned fork/submodule. |
+| `xfitter/` | Pinned xFitter submodule, on the `pod-decomposition` fork branch. It contains the POD decomposition and supporting fixed-likelihood/output changes. |
 | `pod_projection/` | Python projection utilities and public CT18 validation example. |
 | `fits/SMP-22-014/figure2/` | CMS/HERA cards, frozen reference state, likelihood scripts, and documentation. |
 | `xfitter-datafiles/` | Public xFitter datafiles checkout. It is downloaded locally, never vendored into this repository. |
@@ -20,20 +20,33 @@ public inputs; the private POD LHAPDF sets are intentionally not distributed.
 
 ## Setup
 
-Clone this repository, then fetch the public xFitter input data at the pinned
-revision used for the analysis:
+Clone the repository recursively, activate a Conda environment that provides
+ROOT, LHAPDF, GSL, yaml-cpp, CMake, and a GNU Fortran compiler, then run the
+public setup script:
 
 ```bash
-git clone git@github.com:HephyAnalysisSW/InclJets.git
+git clone --recurse-submodules git@github.com:HephyAnalysisSW/InclJets.git
 cd InclJets
-
-git clone --filter=blob:none \
-  https://gitlab.cern.ch/fitters/xfitter-datafiles.git xfitter-datafiles
-git -C xfitter-datafiles checkout 4ed3a5d46872df39c82ed10f3aa9356f382f3c41
+conda activate root
+./scripts/setup-public.sh
+source ./scripts/activate.sh
 ```
 
-The data checkout contains the public HERA and CMS cards, correlations,
-corrections, and theory grids. Do not add it to Git.
+The script initializes the pinned xFitter submodule; builds the bundled public
+QCDNUM 18-00/00 source into `install/qcdnum`; configures and installs xFitter
+into `install/xfitter`; and checks out `xfitter-datafiles` revision
+`4ed3a5d46872df39c82ed10f3aa9356f382f3c41`. The data checkout contains the
+public HERA/CMS cards, correlations, corrections, and theory grids. Do not add
+it to Git. Git LFS is required for the NNLO grids; set `JOBS=N` to change the
+default two build jobs.
+
+The first lightweight validation after public setup is the Figure-2 smoke fit:
+
+```bash
+cd fits/SMP-22-014/figure2/smoke
+./run.sh
+./plot.sh
+```
 
 ### Private POD inputs
 
@@ -64,10 +77,10 @@ Detailed commands and validation notes live in:
 
 ## Reproducibility policy
 
-Source, configuration, compact frozen reference data, checksums, and selected
-plots belong in Git. Generated xFitter output directories, raw scans, build
-trees, public-data clones, and private PDF sets do not. A small smoke test and
-a portable build recipe are the next repository milestones.
+Source, configuration, compact frozen reference data, and checksums belong in
+Git. Generated xFitter output directories, raw scans, derived plots/build
+trees, public-data clones, and private PDF sets do not. `scripts/setup-public.sh`
+and the smoke fit provide the portable public setup and validation path.
 
 ## References
 

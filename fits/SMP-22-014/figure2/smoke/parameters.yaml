@@ -1,0 +1,101 @@
+# Two-parameter smoke fit derived from the reconstructed Figure 2 setup.
+# All PDF parameters except Bg are fixed; alpha_s is the second free parameter.
+
+Minimizer: MINUIT
+MINUIT:
+  Commands: |
+    set str 1
+    migrad 2000
+    hesse
+    call fcn 3
+  doErrors: Hesse
+
+Parameters:
+  Ag: DEPENDENT
+  Bg:  [ -0.061953, 0.02 ]
+  Cg:  [  5.562367, 0.0 ]
+  Dg:  [  0.000000, 0.0 ]
+  Eg:  [  0.000000, 0.0 ]
+
+  Auv: DEPENDENT
+  Buv: [  0.810476, 0.0 ]
+  Cuv: [  4.823512, 0.0 ]
+  Euv: [  9.921366, 0.0 ]
+
+  Adv: DEPENDENT
+  Bdv: [  1.029995, 0.0 ]
+  Cdv: [  4.846279, 0.0 ]
+
+  CUbar: [  7.059694, 0.0 ]
+  DUbar: [  1.548098, 0.0 ]
+
+  ADbar: [  0.268830, 0.0 ]
+  BDbar: [ -0.127300, 0.0 ]
+  CDbar: [  9.586246, 0.0 ]
+  EDbar: [  0.000000, 0.0 ]
+
+  alphas: [ 0.1166, 0.0005 ]
+
+  fs:   [ 0.4, 0.0 ]
+  ZERO: [ 0.0, 0.0 ]
+  fd: "=1-fs"
+  AUbar: "=(1-fs)*ADbar"
+
+Parameterisations:
+  par_uv:
+    class: HERAPDF
+    parameters: [Auv, Buv, Cuv, ZERO, Euv]
+  par_dv:
+    class: HERAPDF
+    parameters: [Adv, Bdv, Cdv]
+  par_Ubar:
+    class: HERAPDF
+    parameters: [AUbar, BDbar, CUbar, DUbar]
+  par_Dbar:
+    class: HERAPDF
+    parameters: [ADbar, BDbar, CDbar, ZERO, EDbar]
+  par_dbar:
+    class: Factor
+    input: par_Dbar
+    factor: fd
+  par_s:
+    class: Factor
+    input: par_Dbar
+    factor: fs
+  par_g:
+    class: HERAPDF
+    parameters: [Ag, Bg, Cg, Dg, Eg]
+
+DefaultDecomposition: proton
+Decompositions:
+  proton:
+    class: UvDvUbarDbarS
+    xuv: par_uv
+    xdv: par_dv
+    xubar: par_Ubar
+    xdbar: par_dbar
+    xs: par_s
+    xg: par_g
+
+DefaultEvolution: proton-QCDNUM
+Evolutions:
+  proton-QCDNUM:
+    ? !include evolutions/QCDNUM.yaml
+    decomposition: proton
+
+Order: NNLO
+NFlavour: 5
+isFFNS: 0
+Q0: 1.378404875209
+
+? !include constants.yaml
+
+byReaction:
+  RT_DISNC:
+    ? !include reactions/RT_DISNC.yaml
+
+hf_scheme_DISNC:
+  defaultValue: RT_DISNC
+
+hf_scheme_DISCC:
+  defaultValue: BaseDISCC

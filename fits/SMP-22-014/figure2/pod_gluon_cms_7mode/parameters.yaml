@@ -1,0 +1,39 @@
+# Seven-mode gluon-POD, CMS-inclusive-jet-only configuration. Not yet fitted.
+Minimizer: MINUIT
+MINUIT:
+  Commands: |
+    call fcn 1
+    set str 2
+    migrad 5000
+    call fcn 3
+  doErrors: None
+
+Parameters:
+  pod_c_1: [0.0, 0.10]
+  pod_c_2: [0.0, 0.10]
+  pod_c_3: [0.0, 0.10]
+  pod_c_4: [0.0, 0.10]
+  pod_c_5: [0.0, 0.10]
+  pod_c_6: [0.0, 0.10]
+  pod_c_7: [0.0, 0.10]
+  alphas: [0.118, 0.0]
+
+DefaultDecomposition: proton
+Decompositions:
+  proton:
+    ? !include pod.yaml
+
+DefaultEvolution: proton-QCDNUM
+Evolutions:
+  proton-QCDNUM:
+    ? !include evolutions/QCDNUM.yaml
+    decomposition: proton
+
+Order: NNLO
+NFlavour: 5
+isFFNS: 0
+Q0: 1.65
+
+? !include constants.yaml
+
+OutputDirectory: output

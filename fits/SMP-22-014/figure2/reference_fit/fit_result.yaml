@@ -1,0 +1,220 @@
+schema_version: 1
+fit_id: smp22014_global_hera_cms_20260805
+snapshot_created_utc: '2026-08-05T18:10:50+00:00'
+status: immutable_reference
+description: Completed HERA I+II plus CMS inclusive-jet global minimum and Hesse result.
+minimum:
+  chi2: 1302.418
+  ndof: 1118
+  chi2_per_dof_reported: 1.165
+  edm: 4.1e-05
+  minuit_status: OK
+  covariance_status: accurate
+  errordef: 1.0
+  reported_correlated_chi2: 80.76718133549662
+  reported_log_penalty_chi2: -13.198233469364498
+  nuisance_count: 198
+  reported_dataset_terms:
+  - index: 1
+    reported_partial_chi2: 376.14
+    reported_shift: 2.49
+    npoints: 332
+    name: HERA1+2 NCep 920
+    group: HERA
+  - index: 2
+    reported_partial_chi2: 59.62
+    reported_shift: -0.26
+    npoints: 63
+    name: HERA1+2 NCep 820
+    group: HERA
+  - index: 3
+    reported_partial_chi2: 201.65
+    reported_shift: -2.21
+    npoints: 234
+    name: HERA1+2 NCep 575
+    group: HERA
+  - index: 4
+    reported_partial_chi2: 209.37
+    reported_shift: -3.75
+    npoints: 187
+    name: HERA1+2 NCep 460
+    group: HERA
+  - index: 5
+    reported_partial_chi2: 226.89
+    reported_shift: -1.71
+    npoints: 159
+    name: HERA1+2 NCem
+    group: HERA
+  - index: 6
+    reported_partial_chi2: 46.07
+    reported_shift: 0.55
+    npoints: 39
+    name: HERA1+2 CCep
+    group: HERA
+  - index: 7
+    reported_partial_chi2: 56.06
+    reported_shift: -2.72
+    npoints: 42
+    name: HERA1+2 CCem
+    group: HERA
+  - index: 8
+    reported_partial_chi2: 0.0
+    reported_shift: -2.05
+    npoints: 22
+    name: CMS inclusive jets 13 TeV, |y| < 0.5
+    group: CMS
+  - index: 9
+    reported_partial_chi2: 0.0
+    reported_shift: -2.09
+    npoints: 21
+    name: CMS inclusive jets 13 TeV, 0.5 < |y| < 1.0
+    group: CMS
+  - index: 10
+    reported_partial_chi2: 0.0
+    reported_shift: -1.33
+    npoints: 19
+    name: CMS inclusive jets 13 TeV, 1.0 < |y| < 1.5
+    group: CMS
+  - index: 11
+    reported_partial_chi2: 0.0
+    reported_shift: -0.12
+    npoints: 16
+    name: CMS inclusive jets 13 TeV, 1.5 < |y| < 2.0
+    group: CMS
+free_parameters:
+- external_id: 1
+  name: ADbar
+  value: 0.267003
+  hesse_error: 0.015667
+- external_id: 6
+  name: BDbar
+  value: -0.120313
+  hesse_error: 0.00828
+- external_id: 7
+  name: Bdv
+  value: 0.762795
+  hesse_error: 0.07123
+- external_id: 8
+  name: Bg
+  value: 0.153937
+  hesse_error: 0.042611
+- external_id: 9
+  name: Buv
+  value: 0.714465
+  hesse_error: 0.025797
+- external_id: 10
+  name: CDbar
+  value: 10.668946
+  hesse_error: 0.953989
+- external_id: 11
+  name: CUbar
+  value: 7.471823
+  hesse_error: 0.658175
+- external_id: 12
+  name: Cdv
+  value: 3.743693
+  hesse_error: 0.353468
+- external_id: 13
+  name: Cg
+  value: 9.691203
+  hesse_error: 0.5042
+- external_id: 14
+  name: Cuv
+  value: 4.901321
+  hesse_error: 0.07758
+- external_id: 15
+  name: DUbar
+  value: 4.145963
+  hesse_error: 1.438942
+- external_id: 16
+  name: Dg
+  value: -4.525369
+  hesse_error: 0.561898
+- external_id: 17
+  name: EDbar
+  value: 23.988433
+  hesse_error: 18.044843
+- external_id: 18
+  name: Eg
+  value: 32.131128
+  hesse_error: 3.526481
+- external_id: 19
+  name: Euv
+  value: 13.770841
+  hesse_error: 1.392677
+- external_id: 21
+  name: alphas
+  value: 0.116638
+  hesse_error: 0.001549
+parameter_notes:
+  count: 16
+  independent_pdf_shape_parameters: 15
+  independent_alpha_s_parameters: 1
+  dependent_parameters:
+    Ag: SUMRULE
+    Auv: SUMRULE
+    Adv: SUMRULE
+    AUbar: =(1-fs)*ADbar
+    fd: =1-fs
+  fixed_parameters:
+    fs: 0.4
+    ZERO: 0.0
+  warning: Dependent values printed as 1.0 in parsout are placeholders; replay the YAML relations.
+covariance:
+  file: covariance.npz
+  source: raw/covariance/minuit.out.txt
+  parameter_order:
+  - ADbar
+  - BDbar
+  - Bdv
+  - Bg
+  - Buv
+  - CDbar
+  - CUbar
+  - Cdv
+  - Cg
+  - Cuv
+  - DUbar
+  - Dg
+  - EDbar
+  - Eg
+  - Euv
+  - alphas
+  printed_precision: MINUIT lower triangle rounded to three significant digits
+  minimum_eigenvalue_of_stored_rounded_matrix: 1.4519159217997856e-08
+  maximum_eigenvalue_of_stored_rounded_matrix: 326.37881226119106
+  maximum_relative_diagonal_error_difference: 0.0014511995579157017
+nuisances:
+  file: nuisances.yaml
+  count: 198
+  future_scan_treatment: fixed_at_global_best_fit; no profiling or minimization
+  stored_precision: four decimal places (xFitter Results.txt F9.4 output)
+  exact_runtime_values_available: false
+  required_validation: direct-reference chi2 closure before scanning
+theory:
+  order: NNLO
+  evolution: QCDNUM
+  q0_GeV: 1.378404875209
+  n_flavors: 5
+  flavor_scheme: variable
+software:
+  xfitter_version: 2.2.1
+  xfitter_source_commit: caaaad4b19545498c7b42b26c2ff04913e7aaa02
+  qcdnum_version: 18-00-00
+  datafiles_commit: 4ed3a5d46872df39c82ed10f3aa9356f382f3c41
+  platform: macOS arm64
+source_locations:
+  minimization: ../central
+  covariance_continuation: ../errors
+  generator: ../tools/create_reference_fit.py
+source_sha256:
+  fits/SMP-22-014/figure2/tools/create_reference_fit.py: c1ae2f53ccb1d6b4cf4ab567cc96a35457d8c9b3cada52de25e4f4453e408d51
+  fits/SMP-22-014/figure2/central/parameters.yaml: f6a1379def3fd4fde2a33ac0a33bb90c42250e001329a6572ac7f2714095e50d
+  fits/SMP-22-014/figure2/central/steering.txt: b5f2c045c7f7006bfadde47d9440a25b8c5f98ac424fc403263cf2fccc37509e
+  fits/SMP-22-014/figure2/central/constants.yaml: 1305e816115699114362a34b1e5e3859fc2de42e9c01ff01871b74463a4a6725
+  fits/SMP-22-014/figure2/errors/parameters.yaml: 750ac1f9bd43105fc1f8722d271fc1baa61bbd17a6bc86d2581766f852f5a6b6
+  fits/SMP-22-014/figure2/errors/steering.txt: a0e45ca9a94b2d658ab51b26f7879176af76cf71fa5c8b78251d5cb52a3b5ba2
+  fits/SMP-22-014/figure2/errors/constants.yaml: eb324a2e21525a61b2dd9c389f0463d7b5ab0bee9326799f810c6fb88aa64b64
+  fits/SMP-22-014/figure2/errors/output/parsout_0: 4561c06213df082a184ba0f9639ae158b41edca03611923942292f5ba9be2ed4
+  fits/SMP-22-014/figure2/errors/output/Results.txt: 9a395a6b18baf506623e04e4d1fdc537c6ebf308ca09ff1742323b8459ae4389
+  fits/SMP-22-014/figure2/errors/output/minuit.out.txt: 5418eff8987621b0cc5ca9c6de7af865b18b5ae857226d814040742f4ff66092

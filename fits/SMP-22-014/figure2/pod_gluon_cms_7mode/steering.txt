@@ -1,0 +1,40 @@
+* Prepared seven-mode gluon-POD fit: CMS inclusive jets only.
+
+&InFiles
+  NInputFiles = 4
+
+  InputFileNames =
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_NNLO_y0.dat',
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_NNLO_y1.dat',
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_NNLO_y2.dat',
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_NNLO_y3.dat'
+&End
+
+&InCorr
+  NCorrFiles = 10
+
+  CorrFileNames =
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_y0_y0.corr',
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_y1_y0.corr',
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_y1_y1.corr',
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_y2_y0.corr',
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_y2_y1.corr',
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_y2_y2.corr',
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_y3_y0.corr',
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_y3_y1.corr',
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_y3_y2.corr',
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_y3_y3.corr'
+&End
+
+&xFitter
+  CHI2SettingsName = 'StatScale', 'UncorSysScale', 'CorSysScale', 'UncorChi2Type', 'CorChi2Type'
+  Chi2Settings     = 'Poisson',   'Linear',        'Linear',      'Diagonal',      'Hessian'
+  Chi2ExtraParam   = 'PoissonCorr'
+  LDEBUG = False
+&End
+
+&Output
+  Q2VAL = 2.7225, 10.0, 100.0, 1000.0, 29929.0
+  OUTNX = 101
+  OUTXRANGE = 1E-4, 0.9999
+&End

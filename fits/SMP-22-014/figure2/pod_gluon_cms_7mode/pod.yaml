@@ -1,0 +1,29 @@
+# Gluon-only POD definition consumed by the xFitter POD decomposition.
+class: POD
+set: gluon_POD_nongluon_PDF4LHC21
+reference_member: 0
+basis_members: [1, 2, 3, 4, 5, 6, 7]
+active_flavors: [21]
+coefficient_prefix: pod_c_
+q0: 1.65
+require_matching_q0: true
+value_convention: xfx
+member_convention: member_minus_reference
+
+# Only the gluon is projected; non-gluon flavors remain those of the
+# PDF4LHC21 reference member.
+projection:
+  grid: LHAPDF_XGRID
+  x_slice: [36, -20]
+  flavors: [21]
+  metric: dist0
+
+native_theory:
+  alpha_s_mz: 0.118
+  order_qcd: 2
+  flavor_scheme: variable
+  num_flavors: 5
+  charm_mass_GeV: 1.51
+  bottom_mass_GeV: 4.92
+  q_min_GeV: 1.65
+  q_max_GeV: 100000.0

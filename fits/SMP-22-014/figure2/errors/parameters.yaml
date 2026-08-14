@@ -1,0 +1,101 @@
+# Error-only continuation of the 2026-08-05 central run.
+# Values are the successful HESSE minimum in ../central/output/parsout_1.
+# Initial MINUIT steps remain the robust pre-fit steps from the central card.
+
+Minimizer: MINUIT
+MINUIT:
+  Commands: |
+    set str 2
+    call fcn 3
+  # This is the only HESSE invocation in this run. Do not add `hesse` above.
+  doErrors: Hesse
+
+Parameters:
+  Ag: DEPENDENT
+  Bg:  [  0.153937, 0.05 ]
+  Cg:  [  9.691203, 0.20 ]
+  Dg:  [ -4.525369, 0.20 ]
+  Eg:  [ 32.131128, 0.50 ]
+
+  Auv: DEPENDENT
+  Buv: [  0.714465, 0.03 ]
+  Cuv: [  4.901321, 0.10 ]
+  Euv: [ 13.770841, 0.50 ]
+
+  Adv: DEPENDENT
+  Bdv: [  0.762795, 0.05 ]
+  Cdv: [  3.743693, 0.20 ]
+
+  CUbar: [  7.471823, 0.30 ]
+  DUbar: [  4.145963, 0.50 ]
+
+  ADbar: [  0.267003, 0.01 ]
+  BDbar: [ -0.120313, 0.01 ]
+  CDbar: [ 10.668946, 0.50 ]
+  EDbar: [ 23.988433, 0.50 ]
+
+  alphas: [ 0.116638, 0.0010 ]
+
+  fs:   [ 0.4, 0.0 ]
+  ZERO: [ 0.0, 0.0 ]
+  fd: "=1-fs"
+  AUbar: "=(1-fs)*ADbar"
+
+Parameterisations:
+  par_uv:
+    class: HERAPDF
+    parameters: [Auv, Buv, Cuv, ZERO, Euv]
+  par_dv:
+    class: HERAPDF
+    parameters: [Adv, Bdv, Cdv]
+  par_Ubar:
+    class: HERAPDF
+    parameters: [AUbar, BDbar, CUbar, DUbar]
+  par_Dbar:
+    class: HERAPDF
+    parameters: [ADbar, BDbar, CDbar, ZERO, EDbar]
+  par_dbar:
+    class: Factor
+    input: par_Dbar
+    factor: fd
+  par_s:
+    class: Factor
+    input: par_Dbar
+    factor: fs
+  par_g:
+    class: HERAPDF
+    parameters: [Ag, Bg, Cg, Dg, Eg]
+
+DefaultDecomposition: proton
+Decompositions:
+  proton:
+    class: UvDvUbarDbarS
+    xuv: par_uv
+    xdv: par_dv
+    xubar: par_Ubar
+    xdbar: par_dbar
+    xs: par_s
+    xg: par_g
+
+DefaultEvolution: proton-QCDNUM
+Evolutions:
+  proton-QCDNUM:
+    ? !include evolutions/QCDNUM.yaml
+    decomposition: proton
+
+Order: NNLO
+NFlavour: 5
+isFFNS: 0
+Q0: 1.378404875209
+
+? !include constants.yaml
+
+byReaction:
+  RT_DISNC:
+    ? !include reactions/RT_DISNC.yaml
+
+hf_scheme_DISNC:
+  defaultValue: RT_DISNC
+
+hf_scheme_DISCC:
+  defaultValue: BaseDISCC

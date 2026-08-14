@@ -1,0 +1,4 @@
+[submodule "xfitter"]
+	path = xfitter
+	url = https://gitlab.cern.ch/schoef/xfitter.git
+	branch = pod-decomposition

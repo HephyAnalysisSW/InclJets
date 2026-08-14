@@ -1,0 +1,70 @@
+* Reconstructed central fit for Figure 2 of JHEP 12 (2022) 035.
+* HERA I+II inclusive DIS + CMS 13 TeV R=0.7 inclusive jets.
+
+&InFiles
+  NInputFiles = 11
+
+  InputFileNames =
+    'datafiles/hera/h1zeusCombined/inclusiveDis/1506.06042/HERA1+2_NCep_920-thexp.dat',
+    'datafiles/hera/h1zeusCombined/inclusiveDis/1506.06042/HERA1+2_NCep_820-thexp.dat',
+    'datafiles/hera/h1zeusCombined/inclusiveDis/1506.06042/HERA1+2_NCep_575-thexp.dat',
+    'datafiles/hera/h1zeusCombined/inclusiveDis/1506.06042/HERA1+2_NCep_460-thexp.dat',
+    'datafiles/hera/h1zeusCombined/inclusiveDis/1506.06042/HERA1+2_NCem-thexp.dat',
+    'datafiles/hera/h1zeusCombined/inclusiveDis/1506.06042/HERA1+2_CCep-thexp.dat',
+    'datafiles/hera/h1zeusCombined/inclusiveDis/1506.06042/HERA1+2_CCem-thexp.dat',
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_NNLO_y0.dat',
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_NNLO_y1.dat',
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_NNLO_y2.dat',
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_NNLO_y3.dat'
+&End
+&InCorr
+  NCorrFiles = 10
+
+  CorrFileNames =
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_y0_y0.corr',
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_y1_y0.corr',
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_y1_y1.corr',
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_y2_y0.corr',
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_y2_y1.corr',
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_y2_y2.corr',
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_y3_y0.corr',
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_y3_y1.corr',
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_y3_y2.corr',
+    'datafiles/lhc/cms/jets/2111.10431/Run2016_y3_y3.corr'
+&End
+
+&xFitter
+  CHI2SettingsName = 'StatScale', 'UncorSysScale', 'CorSysScale', 'UncorChi2Type', 'CorChi2Type'
+  Chi2Settings     = 'Poisson',   'Linear',        'Linear',      'Diagonal',      'Hessian'
+  Chi2ExtraParam   = 'PoissonCorr'
+  LDEBUG = False
+&End
+
+&Output
+  ! mt = 173 GeV in constants.yaml, so mt^2 = 29929 GeV^2.
+  Q2VAL = 1.9, 10.0, 100.0, 1000.0, 29929.0
+  OUTNX = 101
+  OUTXRANGE = 1E-4, 0.9999
+&End
+
+&Cuts
+  ProcessName(1) = 'NC e+-p'
+  Variable(1) = 'Q2'
+  CutValueMin(1) = 7.5
+  CutValueMax(1) = 1000000.0
+
+  ProcessName(2) = 'NC e+-p'
+  Variable(2) = 'x'
+  CutValueMin(2) = 0.000001
+  CutValueMax(2) = 1.0
+
+  ProcessName(3) = 'CC e+-p'
+  Variable(3) = 'Q2'
+  CutValueMin(3) = 7.5
+  CutValueMax(3) = 1000000.0
+
+  ProcessName(4) = 'CC e+-p'
+  Variable(4) = 'x'
+  CutValueMin(4) = 0.000001
+  CutValueMax(4) = 1.0
+&End

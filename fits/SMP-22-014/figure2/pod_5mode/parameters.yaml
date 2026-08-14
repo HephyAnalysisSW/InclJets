@@ -1,0 +1,50 @@
+# Five-mode POD test configuration. Prepared but not yet fitted.
+Minimizer: MINUIT
+MINUIT:
+  Commands: |
+    call fcn 1
+    set str 2
+    migrad 5000
+    call fcn 3
+  doErrors: None
+
+Parameters:
+  # Native coefficients multiply member_i - member_0 without rescaling.
+  pod_c_1: [0.0, 0.10]
+  pod_c_2: [0.0, 0.10]
+  pod_c_3: [0.0, 0.10]
+  pod_c_4: [0.0, 0.10]
+  pod_c_5: [0.0, 0.10]
+
+  # The initial POD likelihood is defined as a function of c at fixed alpha_s.
+  alphas: [0.118, 0.0]
+
+DefaultDecomposition: proton
+Decompositions:
+  proton:
+    ? !include pod.yaml
+
+DefaultEvolution: proton-QCDNUM
+Evolutions:
+  proton-QCDNUM:
+    ? !include evolutions/QCDNUM.yaml
+    decomposition: proton
+
+Order: NNLO
+NFlavour: 5
+isFFNS: 0
+Q0: 1.65
+
+? !include constants.yaml
+
+byReaction:
+  RT_DISNC:
+    ? !include reactions/RT_DISNC.yaml
+
+hf_scheme_DISNC:
+  defaultValue: RT_DISNC
+
+hf_scheme_DISCC:
+  defaultValue: BaseDISCC
+
+OutputDirectory: output

@@ -19,10 +19,22 @@ __pycache__/
 fits/**/output/
 fits/**/raw/
 fits/**/__pycache__/
+fits/**/unpolarised.wgt
+fits/**/plots/
 fits/**/likelihood_scans/*/runs/
 fits/**/likelihood_scans/*/evaluations/
+fits/**/likelihood_scans/evaluations/
 fits/**/likelihood_scans/*/*.console.log
 fits/**/likelihood_scans/*/rerun.log
+fits/**/likelihood_scans/*/scan_results.npz
+fits/**/likelihood_scans/*/plots/
+fits/**/likelihood_scans/*/plots_*/
+fits/**/likelihood_scans/*/scan_metadata.yaml
+fits/**/likelihood_scans/high_x_gluon_closure/
+
+# Generated POD projection products
+pod_projection/outputs/
+pod_projection/plots/
 
 # Local logs; the concise project log is retained explicitly.
 *.log
