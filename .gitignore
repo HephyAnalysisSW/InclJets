@@ -1,0 +1,29 @@
+# Local build and installation products
+/build/
+/install/
+/CMakeFiles/
+/CMakeCache.txt
+
+# External public inputs and private local PDF material
+/xfitter-datafiles/
+/private_pdfs/
+/.lhapdf/
+
+# Python cache and editor state
+__pycache__/
+*.py[cod]
+.DS_Store
+.vscode/
+
+# Generated fit and likelihood-scan material
+fits/**/output/
+fits/**/raw/
+fits/**/__pycache__/
+fits/**/likelihood_scans/*/runs/
+fits/**/likelihood_scans/*/evaluations/
+fits/**/likelihood_scans/*/*.console.log
+fits/**/likelihood_scans/*/rerun.log
+
+# Local logs; the concise project log is retained explicitly.
+*.log
+!log.txt
