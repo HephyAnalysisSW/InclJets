@@ -27,7 +27,8 @@ and run the public setup script:
 conda env create -f environment.yml
 conda activate incljets
 
-git clone --recurse-submodules git@github.com:HephyAnalysisSW/InclJets.git
+git clone --recurse-submodules --shallow-submodules \
+  git@github.com:HephyAnalysisSW/InclJets.git
 cd InclJets
 ./scripts/setup-public.sh
 source ./scripts/activate.sh
