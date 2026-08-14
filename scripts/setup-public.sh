@@ -23,7 +23,7 @@ if [[ -z "${CONDA_PREFIX:-}" ]]; then
   exit 1
 fi
 
-git -C "${project_root}" submodule update --init --recursive
+git -C "${project_root}" submodule update --init --recursive --depth 1
 
 data_revision="4ed3a5d46872df39c82ed10f3aa9356f382f3c41"
 data_dir="${project_root}/xfitter-datafiles"

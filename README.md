@@ -27,8 +27,7 @@ and run the public setup script:
 conda env create -f environment.yml
 conda activate incljets
 
-git clone --recurse-submodules --shallow-submodules \
-  git@github.com:HephyAnalysisSW/InclJets.git
+git clone git@github.com:HephyAnalysisSW/InclJets.git
 cd InclJets
 ./scripts/setup-public.sh
 source ./scripts/activate.sh
@@ -38,7 +37,7 @@ The repository is private: the user needs GitHub read access and a configured
 GitHub SSH key. If HTTPS credentials are preferred, replace the clone URL with
 the corresponding authenticated HTTPS URL.
 
-The script initializes the pinned xFitter submodule; builds the bundled public
+The script initializes the pinned xFitter submodule at shallow depth; builds the bundled public
 QCDNUM 18-00/00 source into `install/qcdnum`; configures and installs xFitter
 into `install/xfitter`; and checks out `xfitter-datafiles` revision
 `4ed3a5d46872df39c82ed10f3aa9356f382f3c41`. The data checkout contains the
