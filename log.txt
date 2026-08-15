@@ -138,6 +138,7 @@ Full likelihood comparison (about 2.8 h serial; current dist0 run is diagnostic)
 2026-08-14 Re-ran the fixed-nuisance full-POD reference with installed 250503_pod_basis_40k: total/HERA/CMS = 1301.1646677513709/1229.7548014501342/71.40986630123827, exactly matching the saved result; whole-set fingerprint b3eeae40a8c753090b22beeaf3adb393b36beb54c56367b159426db30c17cfd2.
 2026-08-15 Separated Figure-2-only relative gluon/valence/F2 closure objectives from the generic POD projector; added no-download local validation (including optional POD/interface and plot-only checks), all passing.
 2026-08-15 Fresh one-point end-to-end scan with the active gluon+valence+F2 metric passed: direct/full-POD chi2 = 1302.4176473101982/1301.0235334369384; clean committed xFitter submodule is now accepted and recorded by commit/source hashes.
+2026-08-15 Added the 59 MB 250503_pod_basis_40k LHAPDF archive (SHA-256 c26b193ae8355fd8e3a305f0b806704b0583609324685655553b3c0689f1b21d) and checksum-verified installer to this private repository for handover to the POD authors; remove both once they provide a canonical package.
 
 Quick high-x gluon closure test:
   cd /Users/robertschoefbeck/InclJets/fits/SMP-22-014/figure2/likelihood_scans

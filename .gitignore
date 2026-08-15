@@ -6,7 +6,8 @@
 
 # External public inputs and private local PDF material
 /xfitter-datafiles/
-/private_pdfs/
+/private_pdfs/*
+!/private_pdfs/250503_pod_basis_40k.tar.gz
 /.lhapdf/
 
 # Python cache and editor state
