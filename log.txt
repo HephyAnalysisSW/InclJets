@@ -136,6 +136,8 @@ Full likelihood comparison (about 2.8 h serial; current dist0 run is diagnostic)
 2026-08-05 Added configurable relative photon-exchange F2 proxy term (charge-weighted q+qbar, 1e-4<x<0.1, lambda=3) and tested ADbar at [-2,0,+2]. It reduces HERA POD-direct shifts from [+16.88,-2.33,-18.53] to [+13.39,-0.73,-13.22] and CMS shifts from [-2.53,-0.84,+0.81] to [-1.89,-0.67,+0.61]. Plot: likelihood_scans/adbar_gluon_valence_f2_3point/plots/likelihood_ADbar.png.
 2026-08-14 Verified the public WMIN/NNPOD provenance of 250503_pod_basis_40k; the repositories provide construction code/runcards but no prebuilt LHAPDF archive or standard LHAPDF index entry.
 2026-08-14 Re-ran the fixed-nuisance full-POD reference with installed 250503_pod_basis_40k: total/HERA/CMS = 1301.1646677513709/1229.7548014501342/71.40986630123827, exactly matching the saved result; whole-set fingerprint b3eeae40a8c753090b22beeaf3adb393b36beb54c56367b159426db30c17cfd2.
+2026-08-15 Separated Figure-2-only relative gluon/valence/F2 closure objectives from the generic POD projector; added no-download local validation (including optional POD/interface and plot-only checks), all passing.
+2026-08-15 Fresh one-point end-to-end scan with the active gluon+valence+F2 metric passed: direct/full-POD chi2 = 1302.4176473101982/1301.0235334369384; clean committed xFitter submodule is now accepted and recorded by commit/source hashes.
 
 Quick high-x gluon closure test:
   cd /Users/robertschoefbeck/InclJets/fits/SMP-22-014/figure2/likelihood_scans

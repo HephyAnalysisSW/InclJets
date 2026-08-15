@@ -51,6 +51,22 @@ cd fits/SMP-22-014/figure2/smoke
 ./plot.sh
 ```
 
+To validate a prepared checkout later, without downloading, rebuilding, or
+running a likelihood evaluation, use:
+
+```bash
+./scripts/verify-local.sh
+```
+
+If the private analysis POD set is installed, add `--with-pod` to check its
+member layout through the xFitter interface. To verify plotting from an
+existing result without rerunning a scan, pass its compact results file:
+
+```bash
+./scripts/verify-local.sh --with-pod \
+  --plot fits/SMP-22-014/figure2/likelihood_scans/production_16x21_gluon_valence_f2/scan_results.npz
+```
+
 ## Running the Figure-2 fit
 
 The standard reconstructed HERA+CMS NNLO fit is intentionally separate from
@@ -79,12 +95,12 @@ Run the short three-point smoke comparison and make its plot with:
 source ./scripts/activate.sh
 cd fits/SMP-22-014/figure2/likelihood_scans
 python run_likelihood_scan.py \
-  --output smoke_Bg_3point \
+  --output smoke_Bg_3point_gluon_valence_f2 \
   --parameters Bg \
   --coordinates=-0.5,0,0.5
 python plot_likelihood_scan.py \
-  --input smoke_Bg_3point/scan_results.npz \
-  --output-dir smoke_Bg_3point/plots
+  --input smoke_Bg_3point_gluon_valence_f2/scan_results.npz \
+  --output-dir smoke_Bg_3point_gluon_valence_f2/plots
 ```
 
 The resulting `likelihood_Bg.png` and `likelihood_comparison.pdf` compare the
@@ -125,9 +141,16 @@ required for the central full-flavour likelihood studies.
 - `fits/SMP-22-014/figure2/likelihood_scans/` evaluates fixed-nuisance direct
   and full-POD likelihoods without minimization or nuisance profiling.
 
-The full-POD fixed-nuisance reference was rerun after the portable setup
-cleanup and exactly reproduces the stored likelihood: total 1301.1646677513709
-(HERA 1229.7548014501342, CMS 71.40986630123827).
+The generic POD package implements only basis loading, grids, and standard
+projection metrics. The Figure-2 likelihood directory owns the optional
+relative gluon, valence, and F2 closure objectives, so they cannot silently
+affect a generic external-PDF projection.
+
+With the currently configured relative-gluon+valence+F2 projection objective,
+the fresh fixed-nuisance reference is total 1301.0235334369384 (HERA
+1229.0831474048314, CMS 71.94038603210495). The earlier
+relative-gluon-only reference, retained as a diagnostic, is
+1301.1646677513709 (HERA 1229.7548014501342, CMS 71.40986630123827).
 
 Detailed commands and validation notes live in:
 

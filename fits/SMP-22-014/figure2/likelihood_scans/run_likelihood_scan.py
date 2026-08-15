@@ -165,14 +165,15 @@ def main() -> None:
 
     lhapdf.setVerbosity(0)
     sys.path.insert(0, str(project_root))
-    from pod_projection.pod_projection import LHAPDF_XGRID, ProjectionOperator
+    from pod_projection.pod_projection import LHAPDF_XGRID
+    from projection_metrics import Figure2ProjectionOperator
 
     projection = config["projection"]
     start, stop = projection["x_slice"]
     x_grid = LHAPDF_XGRID[start:stop]
     flavors = tuple(int(pid) for pid in projection["flavors"])
     q_ext = float(projection["q_ext_GeV"])
-    operator = ProjectionOperator.build(
+    operator = Figure2ProjectionOperator.build(
         projection["basis_set"],
         int(projection["coefficient_count"]),
         flavors,

@@ -19,23 +19,28 @@ The comparison follows this chain:
 4. The runner stores compact row arrays in `scan_results.npz`; plotting reads
    only this file and never invokes xFitter.
 
+`relative_gluon` and its optional valence/F2 extensions are defined in the
+local `projection_metrics.py`. They are Figure-2 closure objectives only;
+the generic `pod_projection/` package intentionally remains analysis-neutral.
+
 The HERA and CMS terms each include their data, log-penalty, and assigned
 correlated-nuisance penalty contributions. Their sum exactly reproduces the
 joint-card total.
 
 ## Quick validated example
 
-The checked three-point `B_g` scan and plots are in `smoke_Bg_3point`:
+Run a fresh three-point `B_g` scan with an output name that records the active
+gluon+valence+F2 metric:
 
 ```bash
 cd fits/SMP-22-014/figure2/likelihood_scans
 python run_likelihood_scan.py \
-  --output smoke_Bg_3point \
+  --output smoke_Bg_3point_gluon_valence_f2 \
   --parameters Bg \
   --coordinates=-0.5,0,0.5
 python plot_likelihood_scan.py \
-  --input smoke_Bg_3point/scan_results.npz \
-  --output-dir smoke_Bg_3point/plots
+  --input smoke_Bg_3point_gluon_valence_f2/scan_results.npz \
+  --output-dir smoke_Bg_3point_gluon_valence_f2/plots
 ```
 
 Existing completed point directories are reused, so the runner can be invoked
@@ -44,6 +49,20 @@ evaluators. Incomplete point directories from an interrupted evaluator are
 removed automatically; completed directories remain protected. Do not run two
 instances against the same output directory concurrently.
 
+## No-download validation
+
+After the public setup has completed once, validate the installed executable,
+materialized data inputs, Python scripts, and a deterministic projection-metric
+test without downloading, building, or evaluating a likelihood:
+
+```bash
+cd /path/to/InclJets
+./scripts/verify-local.sh
+```
+
+Append `--with-pod` to run the installed-set/interface check, and `--plot
+path/to/scan_results.npz` to regenerate plots from stored numerical results.
+
 ## Full configured scan
 
 Omitting the parameter and coordinate selectors uses all 16 independent
@@ -51,18 +70,19 @@ parameters and the 21 points from `scan_config.yaml`:
 
 ```bash
 cd fits/SMP-22-014/figure2/likelihood_scans
-python run_likelihood_scan.py --output production_16x21_relative_gluon
+python run_likelihood_scan.py --output production_16x21_gluon_valence_f2
 python plot_likelihood_scan.py \
-  --input production_16x21_relative_gluon/scan_results.npz \
-  --output-dir production_16x21_relative_gluon/plots
+  --input production_16x21_gluon_valence_f2/scan_results.npz \
+  --output-dir production_16x21_gluon_valence_f2/plots
 ```
 
 On this machine a direct point takes about 13 seconds and a full-POD point
 about 17 seconds. Reusing the common central point, the full 16x21 scan is
 expected to take roughly 2.8 hours serially and about 0.4 GB. The previous
 `production_16x21` run used the old 140-node `dist0` metric and was stopped;
-its results remain as a historical diagnostic. The new run uses the steerable
-`relative_gluon` metric and the full x grid through x=1.
+its results remain as a historical diagnostic. The active run uses the
+steerable relative-gluon, valence, and F2-proxy objectives on the full x grid
+through x=1. Do not reuse an output directory made with an older metric.
 
 ## High-x gluon closure
 
@@ -126,20 +146,27 @@ the zero coordinate. The lower row is the pointwise bias diagnostic
 `chi2_full_POD - chi2_direct`. A constant offset is therefore visible and is not
 silently subtracted. HERA, CMS inclusive jets, and their sum are shown separately.
 
-The reference point currently gives:
+The active gluon+valence+F2 reference point gives:
 
 ```text
 direct:    1302.417647310198
-full POD:  1301.164667751371
-difference: -1.252979558827
+full POD:  1301.023533436938
+difference: -1.394113873260
 ```
 
 This difference is a measured outcome of the projection/interface/evolution
 test, not a closure assumption. The 100-mode projection's relative residual at
-the reference is `3.2097e-4` in the configured metric.
+the reference is `5.2914e-4` in the configured metric. The retained
+relative-gluon-only reference is 1301.164667751371 and must not be compared
+directly with this active metric.
 
 The full POD solve is numerically sensitive (`cond(X) ~ 2.2e7`). For this
 reason xFitter's LHAPDF6 writer was extended to accept explicit `Xvalues` and
 `Qvalues` and to render IEEE-754 doubles with 17 digits. Do not replace this
 with the ordinary `pdfs_q2val` text output, which keeps too little precision for
 the high modes.
+
+Each evaluation records the pinned xFitter commit, binary/library hashes, and
+hashes of the relevant source files. If a user intentionally has uncommitted
+changes in those source files, their diff is additionally stored with that
+evaluation; a clean pinned submodule is the expected portable state.

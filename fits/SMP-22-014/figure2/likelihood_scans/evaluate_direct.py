@@ -363,9 +363,17 @@ def main() -> None:
         ["git", "-C", str(project_root / "xfitter"), "diff", "--", *source_paths],
         text=True,
     )
-    if not xfitter_patch.strip():
-        raise SystemExit("Expected a nonempty fixed-nuisance xFitter source patch")
-    (run_dir / "xfitter_fixed_nuisance.patch").write_text(xfitter_patch)
+    # The required fixed-nuisance support is committed in the pinned xFitter
+    # submodule.  Preserve a local uncommitted diff when present, but a clean
+    # worktree is the normal portable-install state and must not be an error.
+    xfitter_patch_record = None
+    if xfitter_patch.strip():
+        patch_path = run_dir / "xfitter_worktree.patch"
+        patch_path.write_text(xfitter_patch)
+        xfitter_patch_record = {
+            "file": patch_path.name,
+            "sha256": sha256(patch_path),
+        }
     scan_config_path = scan_dir / "scan_config.yaml"
     result = {
         "schema_version": 1,
@@ -402,8 +410,7 @@ def main() -> None:
                 ["git", "-C", str(project_root / "xfitter"), "rev-parse", "HEAD"],
                 text=True,
             ).strip(),
-            "xfitter_patch": "xfitter_fixed_nuisance.patch",
-            "xfitter_patch_sha256": sha256(run_dir / "xfitter_fixed_nuisance.patch"),
+            "xfitter_worktree_patch": xfitter_patch_record,
             "scan_config_sha256": sha256(scan_config_path),
             "source_sha256": {
                 str(path.relative_to(project_root)): sha256(path) for path in source_files

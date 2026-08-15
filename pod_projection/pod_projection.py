@@ -21,7 +21,7 @@ Q0 = 1.65
 QCD5_FLAVORS = (21, 2, -2, 1, -1, 3, -3, 4, -4, 5, -5)
 QCD4_FLAVORS = (21, 2, -2, 1, -1, 3, -3, 4, -4)
 PAPER_FLAVORS = (1, -1, 2, -2, 3, -3, 4, 21)
-METRICS = ("dist0", "dist4_x", "trapz_x", "trapz_logx", "relative_gluon")
+METRICS = ("dist0", "dist4_x", "trapz_x", "trapz_logx")
 
 # Exact grid used by the upstream GOLLUM demo.  It is the 196-point x grid of
 # the private POD LHAPDF set, retained here at the precision of that demo.
@@ -88,15 +88,6 @@ class ProjectionOperator:
     matrix: np.ndarray
     weights: np.ndarray
     gram: np.ndarray
-    relative_weight: float = 0.1
-    relative_x_range: tuple[float, float] = (0.05, 0.99)
-    relative_floor: float = 1.0e-12
-    relative_valence_weight: float = 0.0
-    relative_valence_x_range: tuple[float, float] = (1.0e-4, 0.1)
-    relative_valence_floor: float = 1.0e-12
-    relative_f2_weight: float = 0.0
-    relative_f2_x_range: tuple[float, float] = (1.0e-4, 0.1)
-    relative_f2_floor: float = 1.0e-12
 
     @classmethod
     def build(
@@ -107,15 +98,6 @@ class ProjectionOperator:
         x_grid: Sequence[float],
         q: float = Q0,
         metric: str = "dist0",
-        relative_weight: float = 0.1,
-        relative_x_range: tuple[float, float] = (0.05, 0.99),
-        relative_floor: float = 1.0e-12,
-        relative_valence_weight: float = 0.0,
-        relative_valence_x_range: tuple[float, float] = (1.0e-4, 0.1),
-        relative_valence_floor: float = 1.0e-12,
-        relative_f2_weight: float = 0.0,
-        relative_f2_x_range: tuple[float, float] = (1.0e-4, 0.1),
-        relative_f2_floor: float = 1.0e-12,
     ) -> "ProjectionOperator":
         if n_basis < 1 or n_basis >= pdfset_size(basis_set):
             raise ValueError(
@@ -130,39 +112,7 @@ class ProjectionOperator:
         reference = basis.reference_grid(x_grid, q)
         shifts = basis.native_shift_grid(x_grid, q)
         matrix = shifts.reshape(n_basis, -1).T
-        if metric == "relative_gluon":
-            # The absolute part remains unweighted; the gluon-relative rows
-            # are assembled in project_grid because their denominator is the
-            # external target PDF and therefore varies point by point.
-            weights = metric_weights("dist0", x_grid, len(flavors))
-            if 21 not in flavors:
-                raise ValueError("relative_gluon requires PID 21 in flavors")
-            if relative_weight <= 0:
-                raise ValueError("relative_weight must be positive")
-            if not (0 < relative_x_range[0] < relative_x_range[1] <= 1):
-                raise ValueError("relative_x_range must satisfy 0 < low < high <= 1")
-            if relative_floor <= 0:
-                raise ValueError("relative_floor must be positive")
-            if relative_valence_weight < 0:
-                raise ValueError("relative_valence_weight must be non-negative")
-            if not (
-                0 < relative_valence_x_range[0]
-                < relative_valence_x_range[1]
-                <= 1
-            ):
-                raise ValueError(
-                    "relative_valence_x_range must satisfy 0 < low < high <= 1"
-                )
-            if relative_valence_floor <= 0:
-                raise ValueError("relative_valence_floor must be positive")
-            if relative_f2_weight < 0:
-                raise ValueError("relative_f2_weight must be non-negative")
-            if not (0 < relative_f2_x_range[0] < relative_f2_x_range[1] <= 1):
-                raise ValueError("relative_f2_x_range must satisfy 0 < low < high <= 1")
-            if relative_f2_floor <= 0:
-                raise ValueError("relative_f2_floor must be positive")
-        else:
-            weights = metric_weights(metric, x_grid, len(flavors))
+        weights = metric_weights(metric, x_grid, len(flavors))
         gram = matrix.T @ (weights[:, np.newaxis] * matrix)
         return cls(
             basis=basis,
@@ -174,17 +124,6 @@ class ProjectionOperator:
             matrix=matrix,
             weights=weights,
             gram=gram,
-            relative_weight=float(relative_weight),
-            relative_x_range=tuple(float(v) for v in relative_x_range),
-            relative_floor=float(relative_floor),
-            relative_valence_weight=float(relative_valence_weight),
-            relative_valence_x_range=tuple(
-                float(v) for v in relative_valence_x_range
-            ),
-            relative_valence_floor=float(relative_valence_floor),
-            relative_f2_weight=float(relative_f2_weight),
-            relative_f2_x_range=tuple(float(v) for v in relative_f2_x_range),
-            relative_f2_floor=float(relative_f2_floor),
         )
 
     @property
@@ -209,116 +148,9 @@ class ProjectionOperator:
                 f"got {target_grid.shape}"
             )
         displacement = (target_grid - self.reference_grid).reshape(-1)
-        if self.metric == "relative_gluon":
-            # Add lambda * (target-project)/target for the selected gluon
-            # x-range. This is a configurable closure metric, not an
-            # experimental likelihood term or a PDF prior.
-            augmented_matrix = [self.matrix]
-            augmented_displacement = [displacement]
-            gluon = self.basis.flavors.index(21)
-            target_gluon = target_grid[gluon]
-            mask = (self.x_grid >= self.relative_x_range[0]) & (
-                self.x_grid <= self.relative_x_range[1]
-            )
-            denominator = np.maximum(np.abs(target_gluon[mask]), self.relative_floor)
-            relative_matrix = self.matrix.reshape(len(self.basis.flavors), len(self.x_grid), -1)[gluon, mask]
-            relative_displacement = displacement.reshape(len(self.basis.flavors), len(self.x_grid))[gluon, mask]
-            augmented_matrix.append(self.relative_weight * relative_matrix / denominator[:, None])
-            augmented_displacement.append(self.relative_weight * relative_displacement / denominator)
-            if self.relative_valence_weight:
-                valence_mask = (
-                    (self.x_grid >= self.relative_valence_x_range[0])
-                    & (self.x_grid <= self.relative_valence_x_range[1])
-                )
-                for quark, antiquark in ((2, -2), (1, -1)):
-                    q_index = self.basis.flavors.index(quark)
-                    aq_index = self.basis.flavors.index(antiquark)
-                    valence_target = target_grid[q_index, valence_mask] - target_grid[
-                        aq_index, valence_mask
-                    ]
-                    valence_matrix = (
-                        self.matrix.reshape(
-                            len(self.basis.flavors), len(self.x_grid), -1
-                        )[q_index, valence_mask]
-                        - self.matrix.reshape(
-                            len(self.basis.flavors), len(self.x_grid), -1
-                        )[aq_index, valence_mask]
-                    )
-                    valence_displacement = displacement.reshape(
-                        len(self.basis.flavors), len(self.x_grid)
-                    )[q_index, valence_mask] - displacement.reshape(
-                        len(self.basis.flavors), len(self.x_grid)
-                    )[aq_index, valence_mask]
-                    valence_denominator = np.maximum(
-                        np.abs(valence_target), self.relative_valence_floor
-                    )
-                    augmented_matrix.append(
-                        self.relative_valence_weight
-                        * valence_matrix
-                        / valence_denominator[:, None]
-                    )
-                    augmented_displacement.append(
-                        self.relative_valence_weight
-                        * valence_displacement
-                        / valence_denominator
-                    )
-            if self.relative_f2_weight:
-                # Photon-exchange F2 proxy: sum_f e_f^2 x(q_f + qbar_f).
-                # It is a projection constraint for the HERA-sensitive light
-                # sea combination, not an extra term in the fit likelihood.
-                f2_mask = (
-                    (self.x_grid >= self.relative_f2_x_range[0])
-                    & (self.x_grid <= self.relative_f2_x_range[1])
-                )
-                f2_components = {
-                    2: 4.0 / 9.0,
-                    -2: 4.0 / 9.0,
-                    1: 1.0 / 9.0,
-                    -1: 1.0 / 9.0,
-                    3: 1.0 / 9.0,
-                    -3: 1.0 / 9.0,
-                    4: 4.0 / 9.0,
-                    -4: 4.0 / 9.0,
-                    5: 1.0 / 9.0,
-                    -5: 1.0 / 9.0,
-                }
-                missing = set(f2_components) - set(self.basis.flavors)
-                if missing:
-                    raise ValueError(f"relative_f2 requires flavors {sorted(missing)}")
-                matrix_3d = self.matrix.reshape(
-                    len(self.basis.flavors), len(self.x_grid), -1
-                )
-                displacement_2d = displacement.reshape(
-                    len(self.basis.flavors), len(self.x_grid)
-                )
-                f2_matrix = sum(
-                    charge * matrix_3d[self.basis.flavors.index(pid), f2_mask]
-                    for pid, charge in f2_components.items()
-                )
-                f2_displacement = sum(
-                    charge * displacement_2d[self.basis.flavors.index(pid), f2_mask]
-                    for pid, charge in f2_components.items()
-                )
-                f2_target = sum(
-                    charge * target_grid[self.basis.flavors.index(pid), f2_mask]
-                    for pid, charge in f2_components.items()
-                )
-                f2_denominator = np.maximum(
-                    np.abs(f2_target), self.relative_f2_floor
-                )
-                augmented_matrix.append(
-                    self.relative_f2_weight * f2_matrix / f2_denominator[:, None]
-                )
-                augmented_displacement.append(
-                    self.relative_f2_weight * f2_displacement / f2_denominator
-                )
-            coefficients, *_ = np.linalg.lstsq(
-                np.vstack(augmented_matrix), np.concatenate(augmented_displacement), rcond=None
-            )
-        else:
-            rhs = self.matrix.T @ (self.weights * displacement)
-            # Keep the same normal-equation solve as the upstream demonstration.
-            coefficients = np.linalg.solve(self.gram, rhs)
+        rhs = self.matrix.T @ (self.weights * displacement)
+        # Keep the same normal-equation solve as the upstream demonstration.
+        coefficients = np.linalg.solve(self.gram, rhs)
         projected = self.reference_grid + (
             self.matrix @ coefficients
         ).reshape(self.reference_grid.shape)
