@@ -115,18 +115,11 @@ full-flavour reference and members 1--100 are its POD directions at
 Q0 = 1.65 GeV. Its construction is implemented by the public
 [WMIN model](https://github.com/HEP-PBSP/wmin-model), and the public
 [NNPOD runcards](https://github.com/comane/NNPOD-wiki) use this exact set name.
-The repositories provide the construction code and runcards, rather than a
-prebuilt LHAPDF archive; install the released set in a local LHAPDF search path
-before running a POD card. The verified installed version used here has 101
+The verified installed version used here has 101
 members and whole-directory SHA-256 fingerprint
 `b3eeae40a8c753090b22beeaf3adb393b36beb54c56367b159426db30c17cfd2`.
 
-For temporary handover to the POD authors, this private repository includes
-`private_pdfs/250503_pod_basis_40k.tar.gz` (59 MB; SHA-256
-`c26b193ae8355fd8e3a305f0b806704b0583609324685655553b3c0689f1b21d`).
-It is not a public distribution channel: remove this archive and its installer
-once the authors provide the canonical package. A recipient can install this
-exact handover archive after activating `incljets` with:
+Install with:
 
 ```bash
 ./scripts/install-pod-basis.sh private_pdfs/250503_pod_basis_40k.tar.gz
