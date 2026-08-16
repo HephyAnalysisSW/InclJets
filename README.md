@@ -144,6 +144,8 @@ required for the central full-flavour likelihood studies.
 - `pod_projection/` projects installed LHAPDF PDFs onto the native POD basis.
 - `fits/SMP-22-014/figure2/likelihood_scans/` evaluates fixed-nuisance direct
   and full-POD likelihoods without minimization or nuisance profiling.
+- `fits/SMP-22-014/figure2/cms_closure/` traces the full-POD compression
+  defect through the CMS jet bins with every active CMS nuisance fixed to zero.
 
 The generic POD package implements only basis loading, grids, and standard
 projection metrics. The Figure-2 likelihood directory owns the optional
@@ -161,6 +163,7 @@ Detailed commands and validation notes live in:
 - [`POD projection`](pod_projection/README.md)
 - [`POD xFitter interface`](xfitter/pdfdecomps/POD/README.md)
 - [`Figure 2 likelihood scans`](fits/SMP-22-014/figure2/likelihood_scans/README.md)
+- [`CMS-only POD closure`](fits/SMP-22-014/figure2/cms_closure/README.md)
 
 ## Reproducibility policy
 

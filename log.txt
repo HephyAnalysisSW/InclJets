@@ -139,6 +139,7 @@ Full likelihood comparison (about 2.8 h serial; current dist0 run is diagnostic)
 2026-08-15 Separated Figure-2-only relative gluon/valence/F2 closure objectives from the generic POD projector; added no-download local validation (including optional POD/interface and plot-only checks), all passing.
 2026-08-15 Fresh one-point end-to-end scan with the active gluon+valence+F2 metric passed: direct/full-POD chi2 = 1302.4176473101982/1301.0235334369384; clean committed xFitter submodule is now accepted and recorded by commit/source hashes.
 2026-08-15 Added the 59 MB 250503_pod_basis_40k LHAPDF archive (SHA-256 c26b193ae8355fd8e3a305f0b806704b0583609324685655553b3c0689f1b21d) and checksum-verified installer to this private repository for handover to the POD authors; remove both once they provide a canonical package.
+2026-08-16 Added CMS-only, zero-nuisance POD closure diagnostic: four inclusive-jet bins, 29 active CMS sources fixed to zero, no minimization/profiling; direct/POD chi2 3781.1046767194/3825.8872918953 (+44.7826151758) for the active gluon+valence+F2 reference. Figures: figure2/cms_closure/output/plots after the documented command.
 
 Quick high-x gluon closure test:
   cd /Users/robertschoefbeck/InclJets/fits/SMP-22-014/figure2/likelihood_scans
