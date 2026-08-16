@@ -92,7 +92,7 @@ def write_lhapdf_set(source: Path, destination: Path, set_name: str, replacement
     (destination / f"{set_name}.info").write_text(info)
 
 
-def parameters(set_name: str) -> str:
+def parameters(set_name: str, q0: float = 1.65) -> str:
     return f"""Minimizer: MINUIT
 MINUIT:
   Commands: |
@@ -118,7 +118,7 @@ Evolutions:
 Order: NNLO
 NFlavour: 5
 isFFNS: 0
-Q0: 1.65
+Q0: {q0:.12g}
 
 ? !include constants.yaml
 
@@ -126,18 +126,18 @@ OutputDirectory: output
 """
 
 
-def export_full_direct_grid(source_direct: Path, output: Path, project_root: Path, figure_dir: Path, run_xfitter) -> Path:
-    """Export the direct PDF down to x=1e-9 before re-injecting into QCDNUM."""
+def export_full_direct_grid(source_direct: Path, output: Path, project_root: Path, figure_dir: Path, run_xfitter, q0: float = 1.65, set_name: str = "cms_direct_full_input") -> Path:
+    """Export the direct PDF down to x=1e-9 at a specified input scale."""
     sys.path.insert(0, str(project_root))
     from pod_projection.pod_projection import LHAPDF_XGRID
 
-    run_dir, set_name = output / "direct_export", "cms_direct_full_input"
+    run_dir = output / f"direct_export_{set_name}"
     run_dir.mkdir()
     template = (source_direct / "parameters.yaml").read_text()
     template = template.split("\nWriteLHAPDF6:", 1)[0].rstrip()
     template += "\n\n" + yaml.safe_dump({"WriteLHAPDF6": {
-        "name": set_name, "evolution": "proton-QCDNUM", "description": "Direct HERAPDF full input grid for CMS gluon isolation",
-        "Xvalues": [float(value) for value in LHAPDF_XGRID], "Qvalues": [1.65, 1.65165, 1.6533],
+        "name": set_name, "evolution": "proton-QCDNUM", "description": "Direct HERAPDF full input grid for CMS controls",
+        "Xvalues": [float(value) for value in LHAPDF_XGRID], "Qvalues": [q0, q0 * 1.001, q0 * 1.002],
     }}, sort_keys=False, width=120)
     (run_dir / "parameters.yaml").write_text(template)
     for filename in ("constants.yaml", "steering.txt", "fixed_nuisances.dat"):

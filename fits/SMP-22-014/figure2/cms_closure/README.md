@@ -69,4 +69,21 @@ python run_gluon_isolation.py --all-flavors \
 python plot_flavour_attribution.py output_flavour_isolation/summary.yaml \
   --output output_flavour_isolation/flavour_attribution.png
 ```
+
+## Technical controls: grid versus input scale
+
+The matched flavour study intentionally starts QCDNUM at 1.65 GeV, whereas
+the native HERAPDF parametrisation starts at 1.378404875209 GeV. Separate the
+pure LHAPDF-table import from this change of input scale with:
+
+```bash
+python run_technical_controls.py \
+  --source ../likelihood_scans/production_16x21_gluon_valence_f2 \
+  --output output_technical_controls
+```
+
+It evaluates native HERAPDF, the same full \(x\)-grid table re-imported at its
+native input scale, and the table re-imported at 1.65 GeV. `summary.yaml`
+reports `native_to_table_at_native_q0` (grid/interpolation) separately from
+`table_native_q0_to_table_q165` (input-scale/evolution-history change).
 correlated systematic-nuisance shifts are fixed to zero.

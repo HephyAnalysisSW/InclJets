@@ -142,6 +142,7 @@ Full likelihood comparison (about 2.8 h serial; current dist0 run is diagnostic)
 2026-08-16 Added CMS-only, zero-nuisance POD closure diagnostic: four inclusive-jet bins, 29 active CMS sources fixed to zero, no minimization/profiling; direct/POD chi2 3781.1046767194/3825.8872918953 (+44.7826151758) for the active gluon+valence+F2 reference. Figures: figure2/cms_closure/output/plots after the documented command.
 2026-08-16 Isolated the full-POD gluon residual with matched full-x LHAPDF/QCDNUM direct and gluon-only hybrid controls: CMS fixed-zero-nuisance chi2 changes by +4.0424186579 (3805.6397720283 -> 3809.6821906862). Thus the tiny gluon residual is real but subdominant; quark/multiflavour residuals account for the remainder of the POD closure discrepancy.
 2026-08-16 Full flavour isolation completed with the same matched CMS control: all-flavour POD shift +20.2475041; sum of single-flavour shifts +20.7873151; non-additive cross term -0.5398110. Dominant single shifts are ubar -19.5965, dbar +15.9336, u -14.4007, d +14.3552; gluon +4.0424.
+2026-08-16 Technical CMS controls separated the direct-PDF table route: native -> full-grid LHAPDF table at native Q0 shifts chi2 +1.5303122; rebasing the same table from Q0=1.378404875209 to 1.65 GeV shifts +23.0047831; total +24.5350953. The dominant earlier offset is therefore the changed input-scale/evolution history, not finite x-grid interpolation.
 
 Quick high-x gluon closure test:
   cd /Users/robertschoefbeck/InclJets/fits/SMP-22-014/figure2/likelihood_scans
