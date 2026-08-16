@@ -70,6 +70,19 @@ python plot_flavour_attribution.py output_flavour_isolation/summary.yaml \
   --output output_flavour_isolation/flavour_attribution.png
 ```
 
+For the nominal POD-closure comparison, use the faster scale-aligned mode:
+
+```bash
+python run_gluon_isolation.py --all-flavours-only \
+  --source ../likelihood_scans/production_16x21_gluon_valence_f2 \
+  --output output_scale_aligned_closure
+```
+
+Its `scale_aligned_full_POD_closure_delta_chi2` compares the direct and POD
+PDFs with the same full LHAPDF grid, the same \(Q_0=1.65\) GeV, and the same
+QCDNUM evolution. This is the POD-closure result; do not use the native
+HERAPDF-to-POD difference for that purpose.
+
 ## Technical controls: grid versus input scale
 
 The matched flavour study intentionally starts QCDNUM at 1.65 GeV, whereas

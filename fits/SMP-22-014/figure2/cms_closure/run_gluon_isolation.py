@@ -156,7 +156,10 @@ def main() -> None:
     parser.add_argument("--source", required=True, type=Path, help="Completed full-POD likelihood-scan output")
     parser.add_argument("--output", type=Path, default=Path("output_gluon_isolation"))
     parser.add_argument("--all-flavors", action="store_true", help="Evaluate every single flavour and the all-flavour hybrid")
+    parser.add_argument("--all-flavours-only", action="store_true", help="Evaluate only the matched direct baseline and all-flavour POD closure")
     args = parser.parse_args()
+    if args.all_flavors and args.all_flavours_only:
+        raise SystemExit("Choose at most one of --all-flavors and --all-flavours-only")
 
     script_dir = Path(__file__).resolve().parent
     figure_dir, project_root = script_dir.parent, script_dir.parents[3]
@@ -182,6 +185,8 @@ def main() -> None:
     cases: list[tuple[str, dict[int, np.ndarray]]] = [("direct_input", {})]
     if args.all_flavors:
         cases.extend((f"flavour_{pid:+d}", {int(pid): projected_by_flavour[int(pid)]}) for pid in flavours)
+        cases.append(("all_flavours", projected_by_flavour))
+    elif args.all_flavours_only:
         cases.append(("all_flavours", projected_by_flavour))
     else:
         cases.append(("gluon_hybrid", {21: projected_by_flavour[21]}))
@@ -232,11 +237,13 @@ def main() -> None:
             raise RuntimeError(f"Direct-input and {label} CMS rows do not align")
     np.savez_compressed(output / "flavour_isolation.npz", **{f"{label}_{key}": value for label, record in records.items() for key, value in record.items()})
     shifts = {label: float(likelihood["total_chi2"]) - float(likelihoods["direct_input"]["total_chi2"]) for label, likelihood in likelihoods.items() if label != "direct_input"}
+    scale_aligned_closure = shifts.get("all_flavours")
     (output / "summary.yaml").write_text(yaml.safe_dump({
         "source": str(source), "method": "same Q=1.65-GeV full direct input grid and QCDNUM evolution; replace selected flavour(s) by full POD",
         "nuisance_treatment": "29 active CMS-only sources fixed to zero", "direct_input_likelihood": likelihoods["direct_input"],
         "hybrid_likelihoods": {label: likelihood for label, likelihood in likelihoods.items() if label != "direct_input"},
         "total_chi2_shifts": shifts,
+        "scale_aligned_full_POD_closure_delta_chi2": scale_aligned_closure,
     }, sort_keys=False, width=110))
     for label, shift in shifts.items():
         print(f"{label} CMS chi2 shift: {shift:.12g}")
