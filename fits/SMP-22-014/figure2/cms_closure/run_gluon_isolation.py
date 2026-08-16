@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Isolate the CMS likelihood response to the full-POD gluon residual.
+"""Isolate CMS likelihood responses to individual full-POD flavour residuals.
 
 Both evaluations start from an identical LHAPDF input grid at Q=1.65 GeV and
 are evolved by QCDNUM.  The hybrid changes only the input gluon: it replaces
-the direct grid's g(x) by the full-POD reconstruction.  Hence hybrid minus
-direct-input is a gluon-only representation effect.
+selected direct-grid flavours by their full-POD reconstructions.  Hence each
+hybrid minus direct-input is a flavour-specific representation effect.
 """
 
 from __future__ import annotations
@@ -48,8 +48,8 @@ def parse_rows(path: Path) -> dict[str, np.ndarray]:
     }
 
 
-def write_lhapdf_set(source: Path, destination: Path, set_name: str, projected_gluon: np.ndarray | None, projected_x: np.ndarray | None = None) -> None:
-    """Copy the direct Q=1.65 grid, optionally replacing its gluon column."""
+def write_lhapdf_set(source: Path, destination: Path, set_name: str, replacements: dict[int, np.ndarray] | None = None, projected_x: np.ndarray | None = None) -> None:
+    """Copy a direct Q=1.65 grid, optionally replacing selected flavours."""
     destination.mkdir(parents=True)
     source_dat = next(source.glob("*.dat"))
     source_info = next(source.glob("*.info"))
@@ -63,18 +63,19 @@ def write_lhapdf_set(source: Path, destination: Path, set_name: str, projected_g
     if data_stop > len(lines) or len(flavours) == 0:
         raise RuntimeError("Unexpected LHAPDF grid layout")
     rows = lines[data_start:data_stop]
-    if projected_gluon is not None:
-        if projected_x is None or projected_gluon.size > x_values.size or not np.allclose(x_values[-projected_gluon.size:], projected_x):
-            raise RuntimeError("Projection gluon grid is not the high-x part of the exported direct grid")
-        gluon_column = int(np.where(flavours == 21)[0][0])
+    if replacements:
+        if projected_x is None or any(values.size > x_values.size or not np.allclose(x_values[-values.size:], projected_x) for values in replacements.values()):
+            raise RuntimeError("Projected flavour grid is not the high-x part of the exported direct grid")
+        columns = {pid: int(np.where(flavours == pid)[0][0]) for pid in replacements}
         for row_index, line in enumerate(rows):
             values = np.fromstring(line, sep=" ")
             if values.shape != flavours.shape:
                 raise RuntimeError(f"Malformed LHAPDF row {data_start + row_index + 1}")
             # LHAPDF lhagrid1 stores Q as the innermost index.
             x_index = row_index // len(q_values)
-            if x_index >= len(x_values) - projected_gluon.size:
-                values[gluon_column] = projected_gluon[x_index - (len(x_values) - projected_gluon.size)]
+            for pid, replacement in replacements.items():
+                if x_index >= len(x_values) - replacement.size:
+                    values[columns[pid]] = replacement[x_index - (len(x_values) - replacement.size)]
             rows[row_index] = " ".join(f"{value:.16e}" for value in values)
     if len(q_values) == 1:
         # WriteLHAPDF6 collapses nodes separated by only 1e-6.  The
@@ -86,8 +87,8 @@ def write_lhapdf_set(source: Path, destination: Path, set_name: str, projected_g
     lines = lines[:data_start] + rows + lines[data_stop:]
     (destination / f"{set_name}_0000.dat").write_text("\n".join(lines) + "\n")
     info = source_info.read_text().replace("Direct HERAPDF scan point", "CMS gluon-isolation direct input")
-    if projected_gluon is not None:
-        info = info.replace("CMS gluon-isolation direct input", "CMS gluon-only POD hybrid")
+    if replacements:
+        info = info.replace("CMS gluon-isolation direct input", "CMS flavour-selected POD hybrid")
     (destination / f"{set_name}.info").write_text(info)
 
 
@@ -154,6 +155,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", required=True, type=Path, help="Completed full-POD likelihood-scan output")
     parser.add_argument("--output", type=Path, default=Path("output_gluon_isolation"))
+    parser.add_argument("--all-flavors", action="store_true", help="Evaluate every single flavour and the all-flavour hybrid")
     args = parser.parse_args()
 
     script_dir = Path(__file__).resolve().parent
@@ -169,7 +171,7 @@ def main() -> None:
         raise SystemExit("Source needs full_pod_projection.npz")
     with np.load(projection_path, allow_pickle=False) as projection:
         flavours, x, projected = projection["flavors"].astype(int), projection["x_grid"], projection["projected_grid"]
-    gluon = projected[np.where(flavours == 21)[0][0]]
+    projected_by_flavour = {int(pid): projected[index] for index, pid in enumerate(flavours)}
 
     output = args.output.resolve()
     if output.exists():
@@ -177,8 +179,15 @@ def main() -> None:
     output.mkdir(parents=True)
     direct_grid = export_full_direct_grid(source_direct, output, project_root, figure_dir, run_xfitter)
     lhapdf_root = output / "lhapdf"
-    write_lhapdf_set(direct_grid, lhapdf_root / "cms_direct_input", "cms_direct_input", None)
-    write_lhapdf_set(direct_grid, lhapdf_root / "cms_gluon_pod_hybrid", "cms_gluon_pod_hybrid", gluon, x)
+    cases: list[tuple[str, dict[int, np.ndarray]]] = [("direct_input", {})]
+    if args.all_flavors:
+        cases.extend((f"flavour_{pid:+d}", {int(pid): projected_by_flavour[int(pid)]}) for pid in flavours)
+        cases.append(("all_flavours", projected_by_flavour))
+    else:
+        cases.append(("gluon_hybrid", {21: projected_by_flavour[21]}))
+    for label, replacements in cases:
+        set_name = f"cms_{label}"
+        write_lhapdf_set(direct_grid, lhapdf_root / set_name, set_name, replacements or None, x)
 
     combined = yaml.safe_load((figure_dir / "reference_fit" / "nuisances.yaml").read_text())["nuisances"]
     active_nuisances = [item for item in combined if item["group"] == "CMS" and not str(item["name"]).startswith("proc_")]
@@ -196,7 +205,8 @@ def main() -> None:
     os.environ["LHAPDF_DATA_PATH"] = str(lhapdf_root) + (":" + old_lhapdf_path if old_lhapdf_path else "")
     records, likelihoods = {}, {}
     try:
-        for label, set_name in (("direct_input", "cms_direct_input"), ("gluon_hybrid", "cms_gluon_pod_hybrid")):
+        for label, _ in cases:
+            set_name = f"cms_{label}"
             run_dir = output / label
             run_dir.mkdir()
             (run_dir / "parameters.yaml").write_text(parameters(set_name))
@@ -216,18 +226,21 @@ def main() -> None:
         else:
             os.environ.pop("LHAPDF_DATA_PATH", None)
 
-    direct, hybrid = records["direct_input"], records["gluon_hybrid"]
-    if not np.array_equal(direct["pt"], hybrid["pt"]):
-        raise RuntimeError("Direct-input and hybrid CMS rows do not align")
-    np.savez_compressed(output / "gluon_isolation.npz", **{f"direct_{key}": value for key, value in direct.items()}, **{f"hybrid_{key}": value for key, value in hybrid.items()})
-    shift = float(likelihoods["gluon_hybrid"]["total_chi2"]) - float(likelihoods["direct_input"]["total_chi2"])
+    direct = records["direct_input"]
+    for label, record in records.items():
+        if not np.array_equal(direct["pt"], record["pt"]):
+            raise RuntimeError(f"Direct-input and {label} CMS rows do not align")
+    np.savez_compressed(output / "flavour_isolation.npz", **{f"{label}_{key}": value for label, record in records.items() for key, value in record.items()})
+    shifts = {label: float(likelihood["total_chi2"]) - float(likelihoods["direct_input"]["total_chi2"]) for label, likelihood in likelihoods.items() if label != "direct_input"}
     (output / "summary.yaml").write_text(yaml.safe_dump({
-        "source": str(source), "method": "same Q=1.65-GeV direct input grid and QCDNUM evolution; replace only g(x,Q) by full POD",
+        "source": str(source), "method": "same Q=1.65-GeV full direct input grid and QCDNUM evolution; replace selected flavour(s) by full POD",
         "nuisance_treatment": "29 active CMS-only sources fixed to zero", "direct_input_likelihood": likelihoods["direct_input"],
-        "gluon_hybrid_likelihood": likelihoods["gluon_hybrid"], "gluon_only_total_chi2_shift": shift,
+        "hybrid_likelihoods": {label: likelihood for label, likelihood in likelihoods.items() if label != "direct_input"},
+        "total_chi2_shifts": shifts,
     }, sort_keys=False, width=110))
-    print(f"Gluon-only CMS chi2 shift: {shift:.12g}")
-    print(f"Wrote {output / 'gluon_isolation.npz'}")
+    for label, shift in shifts.items():
+        print(f"{label} CMS chi2 shift: {shift:.12g}")
+    print(f"Wrote {output / 'flavour_isolation.npz'}")
 
 
 if __name__ == "__main__":

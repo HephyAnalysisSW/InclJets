@@ -52,9 +52,21 @@ python run_gluon_isolation.py \
 ```
 
 Read `output_gluon_isolation/summary.yaml`; the field
-`gluon_only_total_chi2_shift` is the desired result. The direct-input control
+`total_chi2_shifts.gluon_hybrid` is the desired result. The direct-input control
 is deliberately not compared directly with the native HERAPDF evaluation,
 since it starts evolution at 1.65 GeV rather than the native 1.378 GeV. It is
 compared only with the hybrid, which shares exactly the same LHAPDF grid and
 evolution route.
+
+To replace each flavour separately and test the additive accounting, add
+`--all-flavors`. The summary contains `total_chi2_shifts`, including the
+all-flavour hybrid. Make the attribution figure with:
+
+```bash
+python run_gluon_isolation.py --all-flavors \
+  --source ../likelihood_scans/production_16x21_gluon_valence_f2 \
+  --output output_flavour_isolation
+python plot_flavour_attribution.py output_flavour_isolation/summary.yaml \
+  --output output_flavour_isolation/flavour_attribution.png
+```
 correlated systematic-nuisance shifts are fixed to zero.
