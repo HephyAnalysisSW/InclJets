@@ -195,6 +195,11 @@ def main() -> None:
             projection.get("relative_f2_x_range", [1.0e-4, 0.1])
         ),
         relative_f2_floor=float(projection.get("relative_f2_floor", 1.0e-12)),
+        relative_light_weight=float(projection.get("relative_light_weight", 0.0)),
+        relative_light_x_range=tuple(
+            projection.get("relative_light_x_range", [0.05, 0.99])
+        ),
+        relative_light_floor=float(projection.get("relative_light_floor", 1.0e-12)),
     )
 
     values = np.asarray(covariance["values"], dtype=float)

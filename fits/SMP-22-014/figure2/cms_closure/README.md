@@ -34,6 +34,28 @@ and their bin-by-bin ratio. The residual figure is a diagonal uncorrelated-resid
 *proxy*, useful to localise bins but not a replacement for xFitter's exact
 Poisson/Hessian likelihood (reported in `metadata.yaml`). The experimental
 correlated systematic-nuisance shifts are fixed to zero.
+
+## Scale-aligned global likelihood and light-flavour diagnosis
+
+For a like-for-like HERA+CMS comparison, direct and POD PDFs must enter via a
+full LHAPDF grid at the shared POD input scale Q0=1.65 GeV. The global
+decomposition retains all 198 nuisance shifts at their frozen reference
+values; it does not minimize or profile. `run_scale_aligned_adbar_scan.py`,
+`run_scale_aligned_global_decomposition.py`, and
+`plot_global_decomposition_before_after.py` produce the corresponding
+before/after HERA, CMS, and summed likelihood comparison.
+
+`run_global_flavour_isolation.py` replaces one input flavour at a time by its
+full-POD reconstruction, retaining the same direct table, evolution, 11 data
+sets, and 198 fixed nuisance shifts. Its figures locate the remaining effect
+in high-x u, ubar, d, and dbar; the gluon remains a protected control.
+
+`analyse_light_basis_expressivity.py` compares the configured projection with
+the unconstrained best high-x uv/dv/F2 reconstruction. It demonstrates an
+ill-conditioned inter-flavour trade-off, not a simply missing POD direction:
+the best light-only solution destroys gluon closure. The experimental
+high-x light metric trials in `run_highx_light_metric_scan.py` are retained as
+negative controls and must not be used in production.
 statistical covariance supplied with the CMS data remains active; only the 29
 active correlated systematic-nuisance shifts are fixed to zero.
 

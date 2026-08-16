@@ -29,6 +29,12 @@ class Figure2ProjectionOperator:
     relative_f2_weight: float = 0.0
     relative_f2_x_range: tuple[float, float] = (1.0e-4, 0.1)
     relative_f2_floor: float = 1.0e-12
+    relative_light_weight: float = 0.0
+    relative_light_x_range: tuple[float, float] = (0.05, 0.99)
+    relative_light_floor: float = 1.0e-12
+    relative_highx_valence_weight: float = 0.0
+    relative_highx_f2_weight: float = 0.0
+    relative_highx_x_range: tuple[float, float] = (0.05, 0.7)
 
     @classmethod
     def build(
@@ -41,7 +47,7 @@ class Figure2ProjectionOperator:
         metric: str,
         **kwargs: object,
     ) -> "Figure2ProjectionOperator":
-        if metric != "relative_gluon":
+        if metric not in ("relative_gluon", "relative_gluon_light"):
             return cls(ProjectionOperator.build(basis_set, n_basis, flavors, x_grid, q, metric), metric)
         if 21 not in flavors:
             raise ValueError("relative_gluon requires PID 21 in flavors")
@@ -57,17 +63,23 @@ class Figure2ProjectionOperator:
                 ("relative_f2_weight", 0.0),
                 ("relative_f2_x_range", (1.0e-4, 0.1)),
                 ("relative_f2_floor", 1.0e-12),
+                ("relative_light_weight", 0.0),
+                ("relative_light_x_range", (0.05, 0.99)),
+                ("relative_light_floor", 1.0e-12),
+                ("relative_highx_valence_weight", 0.0),
+                ("relative_highx_f2_weight", 0.0),
+                ("relative_highx_x_range", (0.05, 0.7)),
             )
         }
-        for name in ("relative_weight", "relative_floor", "relative_valence_floor", "relative_f2_floor"):
+        for name in ("relative_weight", "relative_floor", "relative_valence_floor", "relative_f2_floor", "relative_light_floor"):
             if float(values[name]) <= 0:
                 raise ValueError(f"{name} must be positive")
-        for name in ("relative_x_range", "relative_valence_x_range", "relative_f2_x_range"):
+        for name in ("relative_x_range", "relative_valence_x_range", "relative_f2_x_range", "relative_light_x_range", "relative_highx_x_range"):
             low, high = (float(v) for v in values[name])
             if not 0 < low < high <= 1:
                 raise ValueError(f"{name} must satisfy 0 < low < high <= 1")
             values[name] = (low, high)
-        for name in ("relative_valence_weight", "relative_f2_weight"):
+        for name in ("relative_valence_weight", "relative_f2_weight", "relative_light_weight", "relative_highx_valence_weight", "relative_highx_f2_weight"):
             if float(values[name]) < 0:
                 raise ValueError(f"{name} must be non-negative")
         return cls(
@@ -80,7 +92,7 @@ class Figure2ProjectionOperator:
         return getattr(self.base, name)
 
     def project_grid(self, target_grid: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-        if self.metric != "relative_gluon":
+        if self.metric not in ("relative_gluon", "relative_gluon_light"):
             return self.base.project_grid(target_grid)
         target_grid = np.asarray(target_grid, dtype=float)
         if target_grid.shape != self.base.reference_grid.shape:
@@ -115,6 +127,24 @@ class Figure2ProjectionOperator:
             def weighted(values: np.ndarray) -> np.ndarray:
                 return sum(charge * values[self.base.basis.flavors.index(pid)] for pid, charge in charges.items())
             add_relative(weighted(matrix_3d), weighted(target_grid), weighted(displacement_2d), mask, self.relative_f2_weight, self.relative_f2_floor)
+
+        if self.relative_light_weight:
+            mask = (self.base.x_grid >= self.relative_light_x_range[0]) & (self.base.x_grid <= self.relative_light_x_range[1])
+            for pid in (2, -2, 1, -1):
+                index = self.base.basis.flavors.index(pid)
+                add_relative(matrix_3d[index], target_grid[index], displacement_2d[index], mask, self.relative_light_weight, self.relative_light_floor)
+
+        if self.relative_highx_valence_weight or self.relative_highx_f2_weight:
+            mask = (self.base.x_grid >= self.relative_highx_x_range[0]) & (self.base.x_grid <= self.relative_highx_x_range[1])
+            if self.relative_highx_valence_weight:
+                for quark, antiquark in ((2, -2), (1, -1)):
+                    q, aq = self.base.basis.flavors.index(quark), self.base.basis.flavors.index(antiquark)
+                    add_relative(matrix_3d[q] - matrix_3d[aq], target_grid[q] - target_grid[aq], displacement_2d[q] - displacement_2d[aq], mask, self.relative_highx_valence_weight, self.relative_valence_floor)
+            if self.relative_highx_f2_weight:
+                charges = {2: 4 / 9, -2: 4 / 9, 1: 1 / 9, -1: 1 / 9, 3: 1 / 9, -3: 1 / 9, 4: 4 / 9, -4: 4 / 9, 5: 1 / 9, -5: 1 / 9}
+                def weighted(values: np.ndarray) -> np.ndarray:
+                    return sum(charge * values[self.base.basis.flavors.index(pid)] for pid, charge in charges.items())
+                add_relative(weighted(matrix_3d), weighted(target_grid), weighted(displacement_2d), mask, self.relative_highx_f2_weight, self.relative_f2_floor)
 
         coefficients, *_ = np.linalg.lstsq(np.vstack(matrices), np.concatenate(displacements), rcond=None)
         projected = self.base.reference_grid + (self.base.matrix @ coefficients).reshape(self.base.reference_grid.shape)

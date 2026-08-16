@@ -149,3 +149,7 @@ Full likelihood comparison (about 2.8 h serial; current dist0 run is diagnostic)
 Quick high-x gluon closure test:
   cd /Users/robertschoefbeck/InclJets/fits/SMP-22-014/figure2/likelihood_scans
   python high_x_gluon_closure.py
+2026-08-16 Completed scale-aligned 21-point ADbar CMS scan; common Q0=1.65 table route reduces the raw CMS POD/direct offset from about +44.8 to about +20.2 with zero CMS nuisances.
+2026-08-16 Completed HERA+CMS fixed-global-nuisance scale-aligned ADbar decomposition: reference POD-direct delta is -1.3197 (HERA -0.6749, CMS -0.6448); the retained 16x21 production scan is likelihood_scans/production_16x21_gluon_valence_f2.
+2026-08-16 Completed global flavour/bin attribution: remaining residual is high-x u,ubar,d,dbar; gluon combined shift is +0.0006 and remains protected.
+2026-08-16 Tested high-x light projection objectives. Pointwise terms are unstable due to vanishing antiquarks; stable valence/F2 terms do not improve closure. The 100-mode light-combination block has full rank but condition number 2.9e9: light-only improvement causes catastrophic gluon damage. Retain the relative_gluon+valence+F2 metric; future solution is a decorrelated light-quark POD basis.

@@ -107,6 +107,9 @@ The resulting `likelihood_Bg.png` and `likelihood_comparison.pdf` compare the
 direct and full-POD HERA, CMS, and summed chi-square terms. The full 16
 parameter x 21 point scan is documented in the
 [`likelihood-scan README`](fits/SMP-22-014/figure2/likelihood_scans/README.md).
+The completed retained-baseline result is
+`production_16x21_gluon_valence_f2/scan_results.npz` (336 paired evaluations).
+Rerunning its documented command is resumable and fills only missing points.
 
 ### POD inputs
 
@@ -146,6 +149,12 @@ required for the central full-flavour likelihood studies.
   and full-POD likelihoods without minimization or nuisance profiling.
 - `fits/SMP-22-014/figure2/cms_closure/` traces the full-POD compression
   defect through the CMS jet bins with every active CMS nuisance fixed to zero.
+
+The closure studies establish that direct and POD PDFs must share a full-grid
+LHAPDF/QCDNUM route at the POD input scale. The remaining global fixed-
+nuisance residual is driven by high-x light-flavour correlations, not the
+gluon. The retained relative-gluon+valence+F2 projection metric is therefore
+the recommended baseline; see the CMS closure README for the full controls.
 
 The generic POD package implements only basis loading, grids, and standard
 projection metrics. The Figure-2 likelihood directory owns the optional
