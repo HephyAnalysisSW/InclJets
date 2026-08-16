@@ -19,6 +19,7 @@ __pycache__/
 # Generated fit and likelihood-scan material
 fits/**/output/
 fits/**/cms_closure/output*/
+fits/**/cms_closure/production_scale_aligned_*/
 fits/**/raw/
 fits/**/__pycache__/
 fits/**/unpolarised.wgt

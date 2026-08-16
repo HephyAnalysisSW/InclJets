@@ -107,9 +107,11 @@ The resulting `likelihood_Bg.png` and `likelihood_comparison.pdf` compare the
 direct and full-POD HERA, CMS, and summed chi-square terms. The full 16
 parameter x 21 point scan is documented in the
 [`likelihood-scan README`](fits/SMP-22-014/figure2/likelihood_scans/README.md).
-The completed retained-baseline result is
-`production_16x21_gluon_valence_f2/scan_results.npz` (336 paired evaluations).
-Rerunning its documented command is resumable and fills only missing points.
+`production_16x21_gluon_valence_f2/scan_results.npz` contains the completed
+336-point native-direct/POD production scan. The scale-aligned analogue is
+started with `cms_closure/run_scale_aligned_full_scan.py`; it is intentionally
+a separate, resumable output because every point must first export a full
+direct grid at Q0=1.65 GeV.
 
 ### POD inputs
 
