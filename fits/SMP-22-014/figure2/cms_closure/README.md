@@ -83,6 +83,18 @@ PDFs with the same full LHAPDF grid, the same \(Q_0=1.65\) GeV, and the same
 QCDNUM evolution. This is the POD-closure result; do not use the native
 HERAPDF-to-POD difference for that purpose.
 
+Make the three publication-oriented closure figures after running both the
+scale-aligned and technical controls:
+
+```bash
+python plot_scale_aligned_closure.py \
+  --projection ../likelihood_scans/production_16x21_gluon_valence_f2/runs/_reference/full_pod_projection.npz \
+  --closure output_scale_aligned_closure/summary.yaml \
+  --closure-data output_scale_aligned_closure/flavour_isolation.npz \
+  --technical output_technical_controls/summary.yaml \
+  --output-dir output_scale_aligned_closure/plots
+```
+
 ## Technical controls: grid versus input scale
 
 The matched flavour study intentionally starts QCDNUM at 1.65 GeV, whereas
