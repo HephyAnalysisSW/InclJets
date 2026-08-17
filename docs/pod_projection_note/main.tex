@@ -1,0 +1,47 @@
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,hyperref}
+\hypersetup{colorlinks=true,citecolor=blue,urlcolor=blue}
+\title{POD PDF Projection and the CMS Inclusive-Jet Fit}
+\author{Inclusive Jets / xFitter working note}
+\date{17 August 2026}
+\begin{document}
+\maketitle
+\section{POD representation and projection}
+The POD construction follows the linear PDF-model idea of Ref.~\cite{LinearPDF}. At $Q_0=1.65\,\mathrm{GeV}$, LHAPDF member zero of \texttt{250503\_pod\_basis\_40k} is $f_a^{(0)}$, while the other 100 members define shifts $B_{ai}=f_a^{(i)}-f_a^{(0)}$ for $a=(g,u,\bar u,d,\bar d,s,\bar s,c,\bar c,b,\bar b)$. All quantities are $xf_a$. The POD input PDF is
+\begin{equation} f_a^{\rm POD}(x,Q_0;\boldsymbol c)=f_a^{(0)}(x,Q_0)+\sum_{i=1}^{100}B_{ai}(x)c_i . \end{equation}
+QCDNUM evolves the PDF, not the coefficients \cite{QCDNUM}. For an external target $t$ sampled at the same scale and grid, let $d=t-f^{(0)}$ and form the matrix $X$ from the shifts. The generic projection is
+\begin{equation}\hat c=\arg\min_c(Xc-d)^TW(Xc-d),\qquad(X^TWX)\hat c=X^TWd.\end{equation}
+This is a PDF-space calculation, not a data-likelihood fit. The generic CT18NNLO validation uses native shifts without amplitude rescaling and an absolute metric. A target at $Q_{\rm ext}$ must be projected against the basis evaluated at the same $Q_{\rm ext}$.
+\section{CMS Figure--2 modifications}
+The retained CMS objective supplements the absolute term by relative residual penalties,
+\begin{align}\chi^2_{\rm proj}={}&\|Xc-d\|_2^2+\lambda_g^2\sum_{0.05<x<0.99}\left({r_g\over\max(|t_g|,\epsilon)}\right)^2\\&+\lambda_v^2\sum_{10^{-4}<x<0.1}\sum_{q=u,d}\left({r_{q-\bar q}\over\max(|t_{q-\bar q}|,\epsilon)}\right)^2+\lambda_{F_2}^2\sum_{10^{-4}<x<0.1}\left({r_{F_2}\over\max(|t_{F_2}|,\epsilon)}\right)^2 .\end{align}
+Here $r$ is target minus reconstruction and $F_2^{\rm proxy}=\sum_{q=u,d,s,c,b}e_q^2(q+\bar q)$. The production settings are $\lambda_g=0.1$, $\lambda_v=0.1$, and $\lambda_{F_2}=3$. These are projection objectives only, not experimental likelihood terms or PDF priors.
+
+The relative high-$x$ gluon term is the \emph{gluon-tail enhancement}. An absolute norm otherwise underweights a small but phenomenologically relevant high-$x$ gluon. The valence and $F_2$ terms protect low-$x$ DIS-relevant light-quark combinations.
+
+The direct HERAPDF input starts at $\sqrt{1.9}\,\mathrm{GeV}$ while POD starts at 1.65 GeV. Valid closure therefore exports the direct PDF on a full LHAPDF grid down to $x=10^{-9}$, reimports it at 1.65 GeV, and evolves both inputs through the same QCDNUM route. This prevents grid, input-scale, and evolution-history effects from being called POD compression. The implementation is in xFitter \cite{XFitter}, with the CMS/HERA configuration supplied alongside the CMS analysis \cite{CMS,HERA}.
+
+Pointwise high-$x$ $u,\bar u,d,\bar d$ relative terms were rejected because vanishing antiquarks are ill conditioned. Stable high-$x$ valence/$F_2$ trials also did not improve closure. The full basis spans the light combinations but only along a highly ill-conditioned direction that catastrophically damages gluon closure; these trials are diagnostics, not production settings.
+\section{Direct CMS analytic parametrisation}
+At $Q_0^2=1.9\,\mathrm{GeV}^2$, the direct Figure--2 fit uses $xf=A x^B(1-x)^C(1+Dx+Ex^2)$, specifically
+\begin{align}xg&=A_gx^{B_g}(1-x)^{C_g}(1+D_gx+E_gx^2),&xu_v&=A_{u_v}x^{B_{u_v}}(1-x)^{C_{u_v}}(1+E_{u_v}x^2),\\xd_v&=A_{d_v}x^{B_{d_v}}(1-x)^{C_{d_v}},&x\bar U&=A_{\bar U}x^{B_{\bar D}}(1-x)^{C_{\bar U}}(1+D_{\bar U}x),\\x\bar D&=A_{\bar D}x^{B_{\bar D}}(1-x)^{C_{\bar D}}(1+E_{\bar D}x^2).\end{align}
+The conventions are $\bar U=\bar u$, $\bar D=\bar d+\bar s$, $x\bar d=(1-f_s)x\bar D$, $x\bar s=f_sx\bar D$, $f_s=0.4$, and $A_{\bar U}=(1-f_s)A_{\bar D}$. Valence-number and momentum sum rules fix $A_g,A_{u_v},A_{d_v}$. The 16 independent parameters are $B_g,C_g,D_g,E_g,B_{u_v},C_{u_v},E_{u_v},B_{d_v},C_{d_v},A_{\bar D},B_{\bar D},C_{\bar D},E_{\bar D},C_{\bar U},D_{\bar U},\alpha_s(m_Z)$.
+\section{Other global-fit parametrisations}
+\subsection{CT18NNLO}
+CT18NNLO uses the CTEQ--TEA Hessian framework and low-scale endpoint powers times Bernstein-polynomial expansions \cite{CT18}, $xf_a=x^{a_{1,a}}(1-x)^{a_{2,a}}P_a(y)$, where $y$ is a monotonic map such as $\sqrt{x}$. Bernstein polynomials give local shape control; sum rules and flavour relations apply at $Q_0$; Hessian eigenvectors encode uncertainties. CT18NNLO is the target used by the generic POD validation.
+\subsection{MSHT and NNPDF}
+MSHT uses endpoint powers times flexible Chebyshev-polynomial expansions with Hessian uncertainties \cite{MSHT}. NNPDF uses neural networks with preprocessing factors $xf_a=x^{\alpha_a}(1-x)^{\beta_a}\mathrm{NN}_a(x)$ and Monte-Carlo replicas \cite{NNPDF}. All are input-scale parametrisations followed by DGLAP evolution. POD instead fixes shape functions from an ensemble and fits only linear coordinates.
+\section{Scope}
+The scale-aligned full 100-mode POD has small local likelihood differences from the direct HERA+CMS fit. This does not validate a five- or seven-mode fit; every truncation requires its own closure and minimised-fit validation.
+\begin{thebibliography}{9}
+\bibitem{CMS} CMS Collaboration, \emph{JHEP} \textbf{12} (2022) 035, \href{https://doi.org/10.1007/JHEP12(2022)035}{doi:10.1007/JHEP12(2022)035}.
+\bibitem{HERA} H1 and ZEUS Collaborations, \emph{Eur. Phys. J. C} \textbf{75} (2015) 580, \href{https://arxiv.org/abs/1506.06042}{arXiv:1506.06042}.
+\bibitem{LinearPDF} M. N. Costantini, L. Mantani, J. M. Moore and M. Ubiali, \emph{A linear PDF model for Bayesian inference}, \href{https://arxiv.org/abs/2507.16913}{arXiv:2507.16913}.
+\bibitem{XFitter} xFitter Developers' Team, \emph{xFitter: An Open Source QCD Analysis Framework}, \href{https://arxiv.org/abs/2206.12465}{arXiv:2206.12465}.
+\bibitem{QCDNUM} M. Botje, \emph{Comput. Phys. Commun.} \textbf{182} (2011) 490--532, \href{https://arxiv.org/abs/1005.1481}{arXiv:1005.1481}.
+\bibitem{CT18} T.-J. Hou et al., \emph{Phys. Rev. D} \textbf{103} (2021) 014013, \href{https://arxiv.org/abs/1912.10053}{arXiv:1912.10053}.
+\bibitem{MSHT} S. Bailey et al., \emph{Eur. Phys. J. C} \textbf{81} (2021) 341, \href{https://arxiv.org/abs/2012.04684}{arXiv:2012.04684}.
+\bibitem{NNPDF} R. D. Ball et al., \emph{Eur. Phys. J. C} \textbf{77} (2017) 663, \href{https://arxiv.org/abs/1706.00428}{arXiv:1706.00428}.
+\end{thebibliography}
+\end{document}

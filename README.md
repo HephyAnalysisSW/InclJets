@@ -172,6 +172,7 @@ relative-gluon-only reference, retained as a diagnostic, is
 Detailed commands and validation notes live in:
 
 - [`POD projection`](pod_projection/README.md)
+- [`Standalone POD projection note`](docs/pod_projection_note/README.md) --- LaTeX writeup of the method, CMS choices, parametrisations, and references.
 - [`POD xFitter interface`](xfitter/pdfdecomps/POD/README.md)
 - [`Figure 2 likelihood scans`](fits/SMP-22-014/figure2/likelihood_scans/README.md)
 - [`CMS-only POD closure`](fits/SMP-22-014/figure2/cms_closure/README.md)
