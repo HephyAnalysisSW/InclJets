@@ -112,6 +112,7 @@ Fixed-likelihood reference record and reproducible rerun:
   python evaluate_direct.py --output evaluations/reference_direct_combined_rerun
 2026-08-05 Extended xFitter LHAPDF6 output with explicit x/Q nodes and 17-digit values so the ill-conditioned 100-mode POD projection uses the exact grid without text-precision noise.
 2026-08-17 Added docs/pod_projection_note: standalone LaTeX note with POD method, CMS-specific projection choices, direct parametrisation, global-fit comparison, and references.
+2026-08-17 Extended POD note with the 1760x100 design matrix, augmented least-squares construction, and local 6.3 s build / 9 ms projection benchmark; repaired LaTeX line overflows.
 2026-08-05 Added resumable direct-versus-full-POD fixed-nuisance likelihood scans and plotting for separate HERA, CMS, and summed terms; no minimization or profiling occurs.
 2026-08-05 Paired reference gives chi2 direct=1302.417647310 and full-POD=1301.164667751; the measured POD-minus-direct shift is -1.252979559.
 2026-08-05 Validated a three-point Bg scan at [-0.5,0,+0.5] HESSE sigma and generated its PNG/PDF likelihood-comparison plots; the 16x21 production scan was not started.
