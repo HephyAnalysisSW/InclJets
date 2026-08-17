@@ -86,17 +86,24 @@ def render_parameters(
     return template
 
 
-def render_steering(template: str) -> tuple[str, list[str], list[str]]:
+def render_steering(
+    template: str, fixed_nuisances: bool = True
+) -> tuple[str, list[str], list[str]]:
     xfitter_match = re.search(r"&xFitter\b.*?&End", template, flags=re.DOTALL)
     if not xfitter_match:
         raise RuntimeError("Missing &xFitter block in steering template")
-    xfitter_block = xfitter_match.group(0).replace(
-        "&End",
-        "  UseFixedNuisances = True\n"
-        "  FixedNuisanceFile = 'fixed_nuisances.dat'\n"
-        "&End",
-    )
-    template = template[: xfitter_match.start()] + xfitter_block + template[xfitter_match.end() :]
+    if fixed_nuisances:
+        xfitter_block = xfitter_match.group(0).replace(
+            "&End",
+            "  UseFixedNuisances = True\n"
+            "  FixedNuisanceFile = 'fixed_nuisances.dat'\n"
+            "&End",
+        )
+        template = (
+            template[: xfitter_match.start()]
+            + xfitter_block
+            + template[xfitter_match.end() :]
+        )
 
     input_match = re.search(r"&InFiles\b.*?&End", template, flags=re.DOTALL)
     corr_match = re.search(r"&InCorr\b.*?&End", template, flags=re.DOTALL)

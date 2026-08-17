@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Evaluate the fixed-nuisance likelihood for one full-POD coefficient vector."""
+"""Evaluate one full-POD coefficient vector with fixed or profiled nuisances."""
 
 from __future__ import annotations
 
@@ -131,6 +131,11 @@ def main() -> None:
     parser.add_argument("--alphas", required=True, type=float)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--source-direct-evaluation", type=Path)
+    parser.add_argument(
+        "--profile-nuisances",
+        action="store_true",
+        help="Profile the experimental nuisance parameters instead of fixing them.",
+    )
     args = parser.parse_args()
 
     script_path = Path(__file__).resolve()
@@ -149,7 +154,9 @@ def main() -> None:
     steering_template = (
         reference_dir / "cards" / "covariance" / "steering.txt"
     ).read_text()
-    steering, input_files, corr_files = render_steering(steering_template)
+    steering, input_files, corr_files = render_steering(
+        steering_template, fixed_nuisances=not args.profile_nuisances
+    )
 
     run_dir.mkdir(parents=True)
     shutil.copy2(script_path, run_dir / script_path.name)
@@ -163,12 +170,13 @@ def main() -> None:
         reference_dir / "cards" / "covariance" / "constants.yaml",
         run_dir / "constants.yaml",
     )
-    write_fixed_nuisances(
-        run_dir / "fixed_nuisances.dat",
-        nuisances,
-        fit["fit_id"],
-        nuisance_payload["stored_precision"],
-    )
+    if not args.profile_nuisances:
+        write_fixed_nuisances(
+            run_dir / "fixed_nuisances.dat",
+            nuisances,
+            fit["fit_id"],
+            nuisance_payload["stored_precision"],
+        )
     (run_dir / "datafiles").symlink_to(
         project_root / "xfitter-datafiles", target_is_directory=True
     )
@@ -182,9 +190,16 @@ def main() -> None:
     likelihood = parse_likelihood(run_dir / "output" / "likelihood.txt")
     if likelihood["free_parameter_count"] != 0:
         raise SystemExit("POD evaluation unexpectedly had free parameters")
-    if likelihood["nuisance_treatment"] != "fixed":
-        raise SystemExit("POD evaluation unexpectedly profiled nuisances")
-    groups = likelihood_groups(likelihood, nuisances)
+    expected_treatment = "profiled" if args.profile_nuisances else "fixed"
+    if likelihood["nuisance_treatment"] != expected_treatment:
+        raise SystemExit(
+            f"POD evaluation used nuisance treatment {likelihood['nuisance_treatment']!r}; "
+            f"expected {expected_treatment!r}"
+        )
+    # xFitter reports the profiled correlated penalty only in total.  It cannot
+    # be assigned unambiguously to HERA or CMS without the profiled shifts, so
+    # retain the exact total and omit the fixed-nuisance decomposition here.
+    groups = {} if args.profile_nuisances else likelihood_groups(likelihood, nuisances)
 
     binary = project_root / "install" / "xfitter" / "bin" / "xfitter"
     library = xfitter_library(project_root)
@@ -205,9 +220,11 @@ def main() -> None:
         "coefficient_count": 100,
         "alphas": args.alphas,
         "minimization": False,
-        "profiling": False,
-        "nuisance_source": str(
-            (reference_dir / "nuisances.yaml").relative_to(project_root)
+        "profiling": bool(args.profile_nuisances),
+        "nuisance_source": (
+            "xFitter-profiled" if args.profile_nuisances else str(
+                (reference_dir / "nuisances.yaml").relative_to(project_root)
+            )
         ),
         "nuisance_count": len(nuisances),
         "input_files": input_files,

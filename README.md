@@ -150,6 +150,9 @@ required for the central full-flavour likelihood studies.
 - `fits/SMP-22-014/figure2/likelihood_scans/` evaluates fixed-nuisance direct
   and full-POD likelihoods without minimization or nuisance profiling.
 - `fits/SMP-22-014/figure2/cms_closure/` traces the full-POD compression
+
+- `fits/SMP-22-014/figure2/pod_mediated_fit/` fits the original 16 analytic
+  coordinates while evaluating each point through the full POD representation.
   defect through the CMS jet bins with every active CMS nuisance fixed to zero.
 
 The closure studies establish that direct and POD PDFs must share a full-grid
@@ -176,6 +179,7 @@ Detailed commands and validation notes live in:
 - [`POD xFitter interface`](xfitter/pdfdecomps/POD/README.md)
 - [`Figure 2 likelihood scans`](fits/SMP-22-014/figure2/likelihood_scans/README.md)
 - [`CMS-only POD closure`](fits/SMP-22-014/figure2/cms_closure/README.md)
+- [`POD-mediated analytic fit`](fits/SMP-22-014/figure2/pod_mediated_fit/README.md)
 
 ## Reproducibility policy
 
