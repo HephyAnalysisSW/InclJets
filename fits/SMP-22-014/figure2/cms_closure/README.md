@@ -56,6 +56,23 @@ ill-conditioned inter-flavour trade-off, not a simply missing POD direction:
 the best light-only solution destroys gluon closure. The experimental
 high-x light metric trials in `run_highx_light_metric_scan.py` are retained as
 negative controls and must not be used in production.
+
+The all-parameter scale-aligned scan is resumable and writes 320 displaced
+points (the shared reference is added once per direction for plotting):
+
+```bash
+python run_scale_aligned_full_scan.py \
+  --source ../likelihood_scans/production_16x21_gluon_valence_f2 \
+  --output production_scale_aligned_16x21
+python assemble_scale_aligned_plots.py \
+  --scan production_scale_aligned_16x21/scan_results.npz \
+  --source ../likelihood_scans/production_16x21_gluon_valence_f2 \
+  --reference output_scale_aligned_adbar/global_fixed/reference \
+  --output production_scale_aligned_16x21/scan_results_with_reference.npz
+python ../likelihood_scans/plot_likelihood_scan.py \
+  --input production_scale_aligned_16x21/scan_results_with_reference.npz \
+  --output-dir production_scale_aligned_16x21/plots
+```
 statistical covariance supplied with the CMS data remains active; only the 29
 active correlated systematic-nuisance shifts are fixed to zero.
 
