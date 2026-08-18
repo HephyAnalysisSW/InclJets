@@ -71,7 +71,7 @@ reading and evaluating all 101 LHAPDF members, took 6.3~s. Once built, a
 full Figure--2 projection took 9~ms (average of 20 calls). The projection is
 therefore negligible compared with an xFitter likelihood evaluation; the
 operator should be built once and reused for all scan points.
-\section{CMS Figure--2 modifications}
+\section{Modifications for CMS Inclusive jets (13 TeV)}
 The retained CMS objective supplements the absolute residual with relative
 closure terms:
 \begin{align}
@@ -114,6 +114,72 @@ implementation is in xFitter \cite{XFitter}, with the CMS/HERA configuration
 supplied alongside the CMS analysis \cite{CMS,HERA}.
 
 Pointwise high-$x$ $u,\bar u,d,\bar d$ relative terms were rejected because vanishing antiquarks are ill conditioned. Stable high-$x$ valence/$F_2$ trials also did not improve closure. The full basis spans the light combinations but only along a highly ill-conditioned direction that catastrophically damages gluon closure; these trials are diagnostics, not production settings.
+
+\section{From projected coefficients to the CMS likelihood}
+The projection returns only the 100-dimensional vector $\hat{\boldsymbol c}$.
+It is not itself a prediction or a fit to data.  To evaluate the likelihood of
+the corresponding PDF, xFitter first reconstructs the complete set of input
+flavours at $Q_0=1.65\,\mathrm{GeV}$ from the POD representation above, and evolves that input
+with QCDNUM at NNLO \cite{XFitter,QCDNUM}.  The $c_i$ are held fixed during
+this evolution: it is the reconstructed input PDF, rather than each
+coefficient separately, that is evolved.  The value of $\alpha_s(m_Z)$ is
+passed independently of the projection, since it is not encoded in the POD
+coefficients.
+
+For the CMS inclusive-jet data, the evolved PDFs and $\alpha_s$ are supplied
+to the four NNLO fastNLO interpolation tables, one per measured rapidity bin.
+Each table represents the NNLO partonic calculation, and the fastNLO toolkit
+performs the PDF and $\alpha_s$ convolution for the trial PDF at
+$\mu_R=\mu_F=p_T^{\rm jet}$ \cite{fastNLO}.  Thus no jet cross-section
+variations in the POD directions are precomputed.  At every coefficient
+vector, fastNLO obtains a new parton-level prediction $F_i(\hat{\boldsymbol
+c})$ for each data bin.  The prediction entering the measurement is
+\begin{equation}
+  T_i(\hat{\boldsymbol c}) = F_i(\hat{\boldsymbol c})\,
+       C^{\rm NP}_i\,C^{\rm EW}_i,
+\end{equation}
+where the tabulated non-perturbative and electroweak correction factors are
+the same fixed factors as in the direct CMS fit.  In parallel, the same
+QCDNUM-evolved PDF is passed to the neutral- and charged-current DIS
+reactions for the HERA data.
+
+Schematically, xFitter evaluates the correlated experimental objective as
+\begin{equation}
+ \chi^2(\hat{\boldsymbol c},\boldsymbol\beta) =
+ [\boldsymbol D-\boldsymbol T(\hat{\boldsymbol c})
+       -\Gamma(\hat{\boldsymbol c})\boldsymbol\beta]^T
+ C^{-1}(\hat{\boldsymbol c})
+ [\boldsymbol D-\boldsymbol T(\hat{\boldsymbol c})
+       -\Gamma(\hat{\boldsymbol c})\boldsymbol\beta]
+ +\boldsymbol\beta^T\boldsymbol\beta+\chi^2_{\rm log}.
+\end{equation}
+Here $\boldsymbol D$ denotes the measured HERA and CMS cross sections,
+$C$ contains statistical and uncorrelated components (including the supplied
+CMS statistical correlation matrix), $\Gamma$ contains the correlated
+experimental shifts, and $\beta_k$ are unit-Gaussian Hessian nuisance
+parameters.  The exact xFitter implementation uses the CMS analysis's
+Poisson statistical scaling and linear multiplicative scaling of
+uncorrelated and correlated uncertainties; consequently $C$ and $\Gamma$
+can depend on the prediction.  The final term denotes the associated
+logarithmic penalty.  This equation is a compact description of that
+implemented prescription, rather than a replacement for the data cards.
+
+For a likelihood-only evaluation, the reported POD likelihood is the
+profiled value
+\begin{equation}
+  \chi^2_{\rm POD}(\hat{\boldsymbol c}) =
+  \min_{\boldsymbol\beta}\chi^2(\hat{\boldsymbol c},\boldsymbol\beta).
+\end{equation}
+Therefore the experimental nuisance shifts are reprofiled after the PDF has
+been projected.  In the POD-mediated analytic fit, an outer optimizer varies
+the original 15 analytic PDF-shape parameters and $\alpha_s$; each trial
+analytic PDF is exported at $1.65\,\mathrm{GeV}$, projected to
+$\hat{\boldsymbol c}$ by the weighted least-squares construction, and assigned the profiled xFitter
+likelihood above.  The POD coefficients are derived intermediate variables,
+not additional fitted parameters.  The workflow is implemented by the
+xFitter POD decomposition module, QCDNUM evolution, the fastNLO reaction,
+and the projection driver in the accompanying analysis repository.
+
 \section{Direct CMS analytic parametrisation}
 At $Q_0^2=1.9\,\mathrm{GeV}^2$, the direct Figure--2 fit uses endpoint powers
 times a low-order polynomial:
@@ -152,6 +218,7 @@ The scale-aligned full 100-mode POD has small local likelihood differences from 
 \bibitem{LinearPDF} M. N. Costantini, L. Mantani, J. M. Moore and M. Ubiali, \emph{A linear PDF model for Bayesian inference}, \href{https://arxiv.org/abs/2507.16913}{arXiv:2507.16913}.
 \bibitem{XFitter} xFitter Developers' Team, \emph{xFitter: An Open Source QCD Analysis Framework}, \href{https://arxiv.org/abs/2206.12465}{arXiv:2206.12465}.
 \bibitem{QCDNUM} M. Botje, \emph{Comput. Phys. Commun.} \textbf{182} (2011) 490--532, \href{https://arxiv.org/abs/1005.1481}{arXiv:1005.1481}.
+\bibitem{fastNLO} T. Kluge, K. Rabbertz and M. Wobisch, \emph{FastNLO: Fast pQCD calculations for PDF fits}, \href{https://arxiv.org/abs/hep-ph/0609285}{hep-ph/0609285}.
 \bibitem{CT18} T.-J. Hou et al., \emph{Phys. Rev. D} \textbf{103} (2021) 014013, \href{https://arxiv.org/abs/1912.10053}{arXiv:1912.10053}.
 \bibitem{MSHT} S. Bailey et al., \emph{Eur. Phys. J. C} \textbf{81} (2021) 341, \href{https://arxiv.org/abs/2012.04684}{arXiv:2012.04684}.
 \bibitem{NNPDF} R. D. Ball et al., \emph{Eur. Phys. J. C} \textbf{77} (2017) 663, \href{https://arxiv.org/abs/1706.00428}{arXiv:1706.00428}.
