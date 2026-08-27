@@ -43,19 +43,6 @@ here. Do not add it to Git. Git LFS is required for the NNLO grids; set
 environment (including the local `root` environment used during development)
 also works, but it must provide the packages listed there.
 
-### Linux compiler troubleshooting
-
-On recent Conda-forge Linux compilers, the legacy QCDNUM 18 libtool build can
-fail while linking `libQCDNUM.so` with an undefined `__TMC_END__` symbol. The
-setup script disables linker section garbage collection for that one build;
-this is unrelated to QCDNUM physics. After updating the checkout, remove only
-the incomplete local QCDNUM products and rerun setup:
-
-```bash
-rm -rf build/qcdnum install/qcdnum
-./scripts/setup-public.sh
-```
-
 The first lightweight validation after public setup is the Figure-2 smoke fit:
 
 ```bash

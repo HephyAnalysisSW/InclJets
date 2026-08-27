@@ -75,17 +75,7 @@ if [[ ! -x "${qcdnum_prefix}/bin/qcdnum-config" ]]; then
   fi
   (
     cd "${qcdnum_source}"
-    # QCDNUM 18's libtool link uses -nostdlib and explicitly supplies the
-    # GCC crt objects.  Recent conda-forge Linux compiler specs add
-    # --gc-sections, which can discard crtendS.o's __TMC_END__ definition and
-    # make that legacy shared-library link fail.  This has no physics or
-    # runtime effect for QCDNUM; retain the user's other linker flags and
-    # append the overriding option only on Linux.
-    qcdnum_ldflags="${LDFLAGS:-}"
-    if [[ "$(uname -s)" == "Linux" ]]; then
-      qcdnum_ldflags+=" -Wl,--no-gc-sections"
-    fi
-    LDFLAGS="${qcdnum_ldflags}" ./configure --prefix="${qcdnum_prefix}"
+    ./configure --prefix="${qcdnum_prefix}"
     make -j "${jobs}" install
   )
 fi
