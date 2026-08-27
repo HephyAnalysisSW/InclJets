@@ -43,6 +43,17 @@ here. Do not add it to Git. Git LFS is required for the NNLO grids; set
 environment (including the local `root` environment used during development)
 also works, but it must provide the packages listed there.
 
+### Linux Conda compiler note
+
+Current Conda-forge Linux compilers can cause QCDNUM 18's generated libtool
+file to contain two malformed empty `-L` flags. The public setup script repairs
+that generated file immediately after configuration, before building QCDNUM.
+This is a build-system compatibility fix only; it does not change the QCDNUM
+source or numerical calculation.
+
+The environment deliberately keeps CMake below version 4 because the pinned
+xFitter source uses CMake policy compatibility removed by CMake 4.
+
 The first lightweight validation after public setup is the Figure-2 smoke fit:
 
 ```bash

@@ -76,6 +76,20 @@ if [[ ! -x "${qcdnum_prefix}/bin/qcdnum-config" ]]; then
   (
     cd "${qcdnum_source}"
     ./configure --prefix="${qcdnum_prefix}"
+
+    # With current conda-forge Linux cross compilers, QCDNUM 18's generated
+    # libtool may record two empty library-search flags as ``-L -L`` in its
+    # C++ postdeps.  At the shared-library link, the first then consumes
+    # crtendS.o as a directory argument, omitting its __TMC_END__ definition.
+    # Remove only that malformed trailing pair after configure has generated
+    # libtool.  Keep this portable rather than relying on GNU sed -i.
+    qcdnum_libtool="${qcdnum_source}/libtool"
+    if grep -q 'postdeps=.* -L -L"$' "${qcdnum_libtool}"; then
+      qcdnum_libtool_tmp="$(mktemp "${qcdnum_libtool}.XXXXXX")"
+      sed 's/ -L -L"$/"/' "${qcdnum_libtool}" > "${qcdnum_libtool_tmp}"
+      chmod +x "${qcdnum_libtool_tmp}"
+      mv "${qcdnum_libtool_tmp}" "${qcdnum_libtool}"
+    fi
     make -j "${jobs}" install
   )
 fi
