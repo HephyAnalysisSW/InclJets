@@ -18,6 +18,9 @@ dependencies:
   - gsl
   - yaml-cpp
   - openblas
+  # Keep the LAPACK/BLAS metapackages on the same available OpenBLAS variant.
+  - libblas=*=*openblas
+  - liblapack=*=*openblas
   - numpy
   - matplotlib
   - pyyaml
