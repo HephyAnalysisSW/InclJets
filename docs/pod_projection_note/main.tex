@@ -18,49 +18,49 @@ by a second evaluation of the same experimental likelihood. The coefficients
 are never fitted in the POD-mediated analytic fit.
 
 The direct analytic configuration is in
-\incljetscode{fits/SMP-22-014/figure2/central/parameters.yaml}{central/parameters.yaml};
+\incljetscode{fits/SMP-22-014/figure2/central/parameters.yaml}{parameters card};
 the evolution, reaction, data-file, and theory settings are in
-\incljetscode{fits/SMP-22-014/figure2/central/constants.yaml}{central/constants.yaml}
+\incljetscode{fits/SMP-22-014/figure2/central/constants.yaml}{constants card}
 and the xFitter steering card is
-\incljetscode{fits/SMP-22-014/figure2/central/steering.txt}{central/steering.txt}.
+\incljetscode{fits/SMP-22-014/figure2/central/steering.txt}{steering card}.
 The normal direct fit is launched by
-\incljetscode{fits/SMP-22-014/figure2/central/run.sh}{central/run.sh}.
+\incljetscode{fits/SMP-22-014/figure2/central/run.sh}{run script}.
 The frozen best-fit parameter values and nuisance shifts used by the
 fixed-nuisance comparisons are stored in
 \incljetscode{fits/SMP-22-014/figure2/reference_fit/fit_result.yaml}{reference fit result}
 and
 \incljetscode{fits/SMP-22-014/figure2/reference_fit/nuisances.yaml}{reference nuisances};
-\incljetscode{fits/SMP-22-014/figure2/tools/create_reference_fit.py}{create\_reference\_fit.py}
+\incljetscode{fits/SMP-22-014/figure2/tools/create_reference_fit.py}{snapshot script}
 generates that snapshot from a completed direct fit.
 
 For a direct-versus-POD evaluation,
-\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/evaluate_direct.py}{evaluate\_direct.py}
+\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/evaluate_direct.py}{direct evaluator}
 materialises a card directory, fixes the analytic parameters, and optionally
 exports the direct PDF at the POD scale and exact projection grid. The
 projection definition---basis, flavours, $x$ range, scale, active modes, and
 the gluon/valence/$F_2$ closure weights---is the single
 \incljetscode{fits/SMP-22-014/figure2/likelihood_scans/scan_config.yaml}{scan configuration}.
-\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/projection_metrics.py}{projection\_metrics.py}
+\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/projection_metrics.py}{CMS projection metric}
 adds the CMS-specific rows to the generic projector in
-\incljetscode{pod_projection/pod_projection.py}{pod\_projection.py}.
-\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/evaluate_pod.py}{evaluate\_pod.py}
+\incljetscode{pod_projection/pod_projection.py}{generic projector}.
+\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/evaluate_pod.py}{POD evaluator}
 then writes the POD card and invokes xFitter. The scan driver is
-\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/run_likelihood_scan.py}{run\_likelihood\_scan.py},
+\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/run_likelihood_scan.py}{scan driver},
 and its saved results are plotted by
-\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/plot_likelihood_scan.py}{plot\_likelihood\_scan.py}.
+\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/plot_likelihood_scan.py}{scan plotter}.
 
 The POD decomposition read by xFitter is implemented in
-\xfittercode{pdfdecomps/POD/PODPdfDecomposition.cc}{PODPdfDecomposition.cc}
+\xfittercode{pdfdecomps/POD/PODPdfDecomposition.cc}{source}
 and
-\xfittercode{pdfdecomps/POD/PODBasis.cc}{PODBasis.cc}.
+\xfittercode{pdfdecomps/POD/PODBasis.cc}{basis source}.
 The POD YAML contract is documented in
 \xfittercode{pdfdecomps/POD/README.md}{the xFitter POD README}; concrete
 five-mode and gluon-only seven-mode configurations are
-\incljetscode{fits/SMP-22-014/figure2/pod_5mode/pod.yaml}{pod\_5mode/pod.yaml}
+\incljetscode{fits/SMP-22-014/figure2/pod_5mode/pod.yaml}{five-mode POD card}
 and
-\incljetscode{fits/SMP-22-014/figure2/pod_gluon_cms_7mode/pod.yaml}{pod\_gluon\_cms\_7mode/pod.yaml}.
+\incljetscode{fits/SMP-22-014/figure2/pod_gluon_cms_7mode/pod.yaml}{gluon-only POD card}.
 The full-POD analytic fit is orchestrated by
-\incljetscode{fits/SMP-22-014/figure2/pod_mediated_fit/run_fit.py}{pod\_mediated\_fit/run\_fit.py},
+\incljetscode{fits/SMP-22-014/figure2/pod_mediated_fit/run_fit.py}{outer-fit driver},
 which reads the same scan configuration.
 
 \section{POD representation and projection}
@@ -169,9 +169,9 @@ evolution-history effects from being called POD compression. The
 implementation is in xFitter \cite{XFitter}, with the CMS/HERA configuration
 supplied alongside the CMS analysis \cite{CMS,HERA}. The numerical values and
 ranges used for external projection are read from
-\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/scan_config.yaml}{scan\_config.yaml};
+\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/scan_config.yaml}{projection configuration};
 the augmented-row construction itself is
-\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/projection_metrics.py}{projection\_metrics.py}.
+\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/projection_metrics.py}{CMS projection metric}.
 
 Pointwise high-$x$ $u,\bar u,d,\bar d$ relative terms were rejected because vanishing antiquarks are ill conditioned. Stable high-$x$ valence/$F_2$ trials also did not improve closure. The full basis spans the light combinations but only along a highly ill-conditioned direction that catastrophically damages gluon closure; these trials are diagnostics, not production settings.
 
@@ -239,11 +239,11 @@ likelihood above.  The POD coefficients are derived intermediate variables,
 not additional fitted parameters. The workflow is implemented by the xFitter
 POD decomposition module, QCDNUM evolution, the fastNLO reaction, and the
 projection driver in the accompanying analysis repository. In particular,
-\incljetscode{fits/SMP-22-014/figure2/pod_mediated_fit/run_fit.py}{run\_fit.py}
-calls \incljetscode{fits/SMP-22-014/figure2/likelihood_scans/evaluate_direct.py}{evaluate\_direct.py},
+\incljetscode{fits/SMP-22-014/figure2/pod_mediated_fit/run_fit.py}{outer-fit driver}
+calls \incljetscode{fits/SMP-22-014/figure2/likelihood_scans/evaluate_direct.py}{direct evaluator},
 projects the exported grid with
-\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/projection_metrics.py}{projection\_metrics.py},
-and calls \incljetscode{fits/SMP-22-014/figure2/likelihood_scans/evaluate_pod.py}{evaluate\_pod.py}
+\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/projection_metrics.py}{CMS projection metric},
+and calls \incljetscode{fits/SMP-22-014/figure2/likelihood_scans/evaluate_pod.py}{POD evaluator}
 for the profiled POD likelihood. Its output directory stores every projected
 coefficient vector, input cards, console logs, likelihood result, and the
 outer-optimizer history.
@@ -260,31 +260,31 @@ POD input, and common prediction interface, not a comparison of two
 independently fitted PDFs.
 
 The reference parameter vector and nuisance values are
-\incljetscode{fits/SMP-22-014/figure2/reference_fit/fit_result.yaml}{fit\_result.yaml}
+\incljetscode{fits/SMP-22-014/figure2/reference_fit/fit_result.yaml}{fit point}
 and
-\incljetscode{fits/SMP-22-014/figure2/reference_fit/nuisances.yaml}{nuisances.yaml}.
+\incljetscode{fits/SMP-22-014/figure2/reference_fit/nuisances.yaml}{nuisances}.
 The scan coordinates, $[-2,2]$ Hesse-standard-deviation range, 21 points per
 parameter, fixed-nuisance choice, and projection settings are in
-\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/scan_config.yaml}{scan\_config.yaml}.
-\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/evaluate_direct.py}{evaluate\_direct.py}
+\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/scan_config.yaml}{scan configuration}.
+\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/evaluate_direct.py}{direct evaluator}
 injects those fixed shifts through xFitter's \texttt{UseFixedNuisances} and
 \texttt{FixedNuisanceFile} controls. The POD counterpart,
-\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/evaluate_pod.py}{evaluate\_pod.py},
+\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/evaluate_pod.py}{POD evaluator},
 generates the immutable full-basis POD card (including $Q_0=1.65$ GeV,
 members 1--100, and all active flavours) and uses the same fixed shifts by
-default. Passing \texttt{--profile-nuisances} instead activates nuisance
+default. Passing \texttt{--profile-}\allowbreak\texttt{nuisances} instead activates nuisance
 profiling; this is used for the outer POD-mediated fit, not for these closure
 plots.
 
-\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/run_likelihood_scan.py}{run\_likelihood\_scan.py}
+\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/run_likelihood_scan.py}{scan driver}
 performs and records the paired evaluations. It first checks that the direct
 reference reproduces the stored fit, then writes a projection NPZ file, and
 will resume safely from already completed paired points. The decomposition
 into HERA, CMS, and HERA+CMS terms is implemented in
-\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/scan_tools.py}{scan\_tools.py}:
+\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/scan_tools.py}{likelihood parser}:
 each group contains its data term, its group-associated fixed-nuisance penalty,
 and its log penalty. Finally,
-\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/plot_likelihood_scan.py}{plot\_likelihood\_scan.py}
+\incljetscode{fits/SMP-22-014/figure2/likelihood_scans/plot_likelihood_scan.py}{scan plotter}
 makes one plot per analytic direction and a multipage PDF. The upper panels
 show both curves relative to the direct central value; the lower panels show
 $\chi^2_{\rm POD}-\chi^2_{\rm direct}$ directly, so a constant offset and a
