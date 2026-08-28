@@ -161,3 +161,4 @@ Quick high-x gluon closure test:
 2026-08-27 Reproduced QCDNUM 18 failure with a clean current Conda-forge Linux build on LXPLUS; repaired its generated libtool C++ postdeps by removing malformed empty `-L -L` flags that otherwise hide crtendS.o and __TMC_END__.
 2026-08-27 Clean LXPLUS build validated the QCDNUM repair; pinned CMake below 4 because the current xFitter CMake policy declaration is incompatible with CMake 4.4.
 2026-08-27 Constrained the Conda BLAS/LAPACK metapackages to OpenBLAS after a mixed FlexiBLAS environment failed the xFitter shared-library link with missing -lflexiblas.
+2026-08-28 Expanded the POD note with clickable implementation/configuration pointers from direct cards through projection, POD evaluation, likelihood-closure plots, and the outer POD-mediated fit.

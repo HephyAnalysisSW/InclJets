@@ -1,7 +1,7 @@
 # Inclusive jets with xFitter and POD PDFs
 
-This repository reconstructs the NNLO HERA+CMS inclusive-jet PDF fit behind
-Figure 2 of the CMS inclusive-jet addendum, JHEP 12 (2022) 035. It also adds a
+This repository reconstructs the NNLO HERA+CMS inclusive-jet PDF fit from the
+CMS addendum, JHEP 12 (2022) 035. It also adds a
 POD PDF parameterisation to xFitter and tools for projecting external PDFs onto
 that parameterisation.
 
@@ -54,7 +54,7 @@ source or numerical calculation.
 The environment deliberately keeps CMake below version 4 because the pinned
 xFitter source uses CMake policy compatibility removed by CMake 4.
 
-The first lightweight validation after public setup is the Figure-2 smoke fit:
+The first lightweight validation after public setup is the CMS PDF-fit smoke test:
 
 ```bash
 cd fits/SMP-22-014/figure2/smoke
@@ -78,7 +78,7 @@ existing result without rerunning a scan, pass its compact results file:
   --plot fits/SMP-22-014/figure2/likelihood_scans/production_16x21_gluon_valence_f2/scan_results.npz
 ```
 
-## Running the Figure-2 fit
+## Running the CMS PDF fit
 
 The standard reconstructed HERA+CMS NNLO fit is intentionally separate from
 the smoke test and takes hours on a laptop. From the repository root, after
@@ -154,7 +154,7 @@ required for the central full-flavour likelihood studies.
 
 ## Current status
 
-- The central Figure 2 HERA I+II plus CMS inclusive-jet NNLO fit has been
+- The central HERA I+II plus CMS inclusive-jet NNLO PDF fit has been
   reconstructed and frozen under `fits/SMP-22-014/figure2/reference_fit/`.
 - `xfitter/pdfdecomps/POD/` implements the POD input-scale decomposition.
 - `pod_projection/` projects installed LHAPDF PDFs onto the native POD basis.
@@ -173,7 +173,7 @@ gluon. The retained relative-gluon+valence+F2 projection metric is therefore
 the recommended baseline; see the CMS closure README for the full controls.
 
 The generic POD package implements only basis loading, grids, and standard
-projection metrics. The Figure-2 likelihood directory owns the optional
+projection metrics. The CMS PDF-fit likelihood directory owns the optional
 relative gluon, valence, and F2 closure objectives, so they cannot silently
 affect a generic external-PDF projection.
 
@@ -188,7 +188,7 @@ Detailed commands and validation notes live in:
 - [`POD projection`](pod_projection/README.md)
 - [`Standalone POD projection note`](docs/pod_projection_note/README.md) --- LaTeX writeup of the method, CMS choices, parametrisations, and references.
 - [`POD xFitter interface`](xfitter/pdfdecomps/POD/README.md)
-- [`Figure 2 likelihood scans`](fits/SMP-22-014/figure2/likelihood_scans/README.md)
+- [`CMS PDF-fit likelihood scans`](fits/SMP-22-014/figure2/likelihood_scans/README.md)
 - [`CMS-only POD closure`](fits/SMP-22-014/figure2/cms_closure/README.md)
 - [`POD-mediated analytic fit`](fits/SMP-22-014/figure2/pod_mediated_fit/README.md)
 
