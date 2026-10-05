@@ -42,3 +42,17 @@ pod_projection/plots/
 # Local logs; the concise project log is retained explicitly.
 *.log
 !log.txt
+
+# LaTeX build products.  The built PDFs under docs/ ARE tracked deliberately
+# (they are the shareable artefact); everything else latexmk leaves behind is
+# regenerated on every run.
+*.aux
+*.fls
+*.fdb_latexmk
+*.out
+*.toc
+*.synctex.gz
+*.bbl
+*.blg
+*.nav
+*.snm
