@@ -129,28 +129,37 @@ therefore negligible compared with an xFitter likelihood evaluation; the
 operator should be built once and reused for all scan points.
 \section{Modifications for CMS Inclusive jets (13 TeV)}
 The retained CMS objective supplements the absolute residual with relative
-closure terms:
+closure terms.  For any linear PDF combination $h$, let $t_{h,k}$,
+$f^{(0)}_{h,k}$, and $X_{h,k}$ denote the target, reference, and design-matrix
+row after applying that combination at $x_k$.  Thus
+$d_{h,k}=t_{h,k}-f^{(0)}_{h,k}$ and
+$d_{h,k}-X_{h,k}\boldsymbol c$ is directly the target minus its POD
+reconstruction; no additional residual variable is required.  The objective is
 \begin{align}
   \chi^2_{\rm proj} ={}& \|X\boldsymbol c-\boldsymbol d\|_2^2
   + \lambda_g^2
-    \sum_{0.05<x<0.99}
-    \left(\frac{r_g}{\max(|t_g|,\epsilon)}\right)^2
+    \sum_{0.05<x_k<0.99}
+    \left(\frac{d_{g,k}-X_{g,k}\boldsymbol c}
+    {\max(|t_{g,k}|,\epsilon)}\right)^2
     \nonumber\\
   &+ \lambda_v^2
-    \sum_{10^{-4}<x<0.1}\sum_{q=u,d}
-    \left(\frac{r_{q-\bar q}}
-    {\max(|t_{q-\bar q}|,\epsilon)}\right)^2
+    \sum_{10^{-4}<x_k<0.1}\sum_{q=u,d}
+    \left(\frac{d_{q-\bar q,k}-X_{q-\bar q,k}\boldsymbol c}
+    {\max(|t_{q-\bar q,k}|,\epsilon)}\right)^2
     \nonumber\\
   &+ \lambda_{F_2}^2
-    \sum_{10^{-4}<x<0.1}
-    \left(\frac{r_{F_2}}
-    {\max(|t_{F_2}|,\epsilon)}\right)^2.
+    \sum_{10^{-4}<x_k<0.1}
+    \left(\frac{d_{F_2^{\rm proxy},k}-X_{F_2^{\rm proxy},k}\boldsymbol c}
+    {\max(|t_{F_2^{\rm proxy},k}|,\epsilon)}\right)^2.
 \end{align}
-Here $r$ denotes target minus reconstruction, and
+Here $q-\bar q$ denotes the corresponding valence combination, while
 \begin{equation}
   F_2^{\rm proxy}=
   \sum_{q=u,d,s,c,b}e_q^2(q+\bar q).
 \end{equation}
+This is a charge-weighted, leading-order-like quark combination used only to
+protect the low-$x$ quark content relevant to DIS; it is not a calculation of
+the physical DIS structure function.
 The implementation appends one row to $A$ for every term in these sums,
 dividing both the corresponding row of $X$ and component of $d$ by its
 denominator and multiplying both by $\lambda$. Consequently, it is exactly
